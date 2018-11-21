@@ -10,7 +10,7 @@ class TranscodableType {
 	/**
 	 * Encode an object into a binary representation.
 	 * @param {*} object The object/value to be encoded.
-	 * @param {Buffer} [buffer] The buffer to write to. If the buffer is too small to encode then a new buffer will be allocated.
+	 * @param {Buffer} [buffer] The buffer to write to. If the buffer is too small an exception will be thrown.
 	 * @param {Number} [offset] The offset in buffer to write at.
 	 * @returns {Buffer} The buffer that contains the encoded data. If a new buffer is allocated then the data was written from the begining.
 	 */

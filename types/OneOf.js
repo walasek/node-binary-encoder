@@ -24,18 +24,31 @@ class OneOf extends TranscodableType {
 		});
 		this.Varint = new Varint();
 	}
-	encode(object, buffer_unused, offset){
-		// TODO: Implement buffers through argument
+	encode(object, buffer, offset){
+		if(!offset)
+			offset = 0;
 		const keys = Object.keys(object);
 		if(keys.length > 1)
 			throw new Exceptions.AmbiguousObject('OneOf fields only allow a single object key, provided '+keys.length);
 		const key = keys[0];
 		if(!this.descriptor[key])
 			throw new Exceptions.InvalidEncodeValue('Unknown OneOf key '+key);
-		let buffer = this.Varint.encode(this.id_map[key]);
-		buffer = Buffer.concat([buffer, this.descriptor[key].encode(object[key])]);
-		this.last_bytes_encoded = buffer.length;
-		return buffer;
+		let tmp_buffer = Buffer.from([]);
+		let local_offset = 0;
+		if(buffer){
+			this.Varint.encode(this.id_map[key], buffer, offset+local_offset);
+		}else{
+			tmp_buffer = this.Varint.encode(this.id_map[key]);
+		}
+		local_offset += this.Varint.last_bytes_encoded;
+		if(buffer){
+			this.descriptor[key].encode(object[key], buffer, offset+local_offset);
+		}else{
+			tmp_buffer = Buffer.concat([tmp_buffer, this.descriptor[key].encode(object[key])]);
+		}
+		local_offset += this.descriptor[key].last_bytes_encoded;
+		this.last_bytes_encoded = local_offset;
+		return buffer || tmp_buffer;
 	}
 	decode(buffer, offset){
 		if(!offset)

@@ -11,11 +11,17 @@ const varint = require('varint');
  */
 class Varint extends TranscodableType {
 	encode(object, buffer, offset){
+		if(!offset)
+			offset = 0;
 		if(typeof object !== 'number')
 			throw new Exceptions.InvalidEncodeValue('Expected a number, got '+(typeof object));
-		const result = Buffer.from(varint.encode(object, buffer, offset));
+		if(buffer){
+			buffer = varint.encode(object, buffer, offset);
+		}else{
+			buffer = Buffer.from(varint.encode(object));
+		}
 		this.last_bytes_encoded = varint.encode.bytes;
-		return result;
+		return buffer;
 	}
 	decode(buffer, offset){
 		try {

@@ -19,23 +19,25 @@ class Structure extends TranscodableType {
 		this.descriptor = descriptor;
 		this.fields = Object.keys(this.descriptor);
 	}
-	encode(object, buffer_unused, offset){
-		// TODO: Implement buffers through argument
-		let buffer;
+	encode(object, buffer, offset){
+		if(!offset)
+			offset = 0;
+		let local_offset = 0;
+		let tmp_buffer = Buffer.from([]);
 		for(let i = 0; i < this.fields.length; i++){
 			/*if(!object[this.fields[i]])
 				throw new Exceptions.MissingFields('Cannot encode a partial structure, missing: '+this.fields[i]);*/
 			if(!(this.descriptor[this.fields[i]] instanceof TranscodableType))
 				throw new Exceptions.InvalidDescriptor('Bad descriptor for field '+this.fields[i]);
-			const field_encoded = this.descriptor[this.fields[i]].encode(object[this.fields[i]]);
-			if(!buffer){
-				buffer = field_encoded;
+			if(buffer){
+				this.descriptor[this.fields[i]].encode(object[this.fields[i]], buffer, local_offset+offset);
 			}else{
-				buffer = Buffer.concat([buffer, field_encoded]);
+				tmp_buffer = Buffer.concat([tmp_buffer, this.descriptor[this.fields[i]].encode(object[this.fields[i]])]);
 			}
+			local_offset += this.descriptor[this.fields[i]].last_bytes_encoded;
 		}
-		this.last_bytes_encoded = buffer ? buffer.length : 0;
-		return buffer || Buffer.from([]);
+		this.last_bytes_encoded = local_offset;
+		return buffer || tmp_buffer;
 	}
 	decode(buffer, offset){
 		if(!offset)

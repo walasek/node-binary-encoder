@@ -20,24 +20,32 @@ class TranscodableArray extends TranscodableType {
 		this.fixed_length = fixed_length || 0;
 		this.Varint = new Varint();
 	}
-	encode(object, buffer_unused, offset){
-		// TOOD: Implement buffers through argument
-		let buffer;
+	encode(object, buffer, offset){
+		if(!offset)
+			offset = 0;
+		let tmp_buffer = Buffer.from([]);
+		let local_offset = 0;
 		if(this.fixed_length){
 			if(object.length !== this.fixed_length)
 				throw new Exceptions.MissingFields('Cannot encode fixed array length, passed only '+object.length+' entries');
 		}else{
-			buffer = this.Varint.encode(object.length);
+			if(buffer){
+				this.Varint.encode(object.length, buffer, offset+local_offset);
+			}else{
+				tmp_buffer = this.Varint.encode(object.length);
+			}
+			local_offset += this.Varint.last_bytes_encoded;
 		}
 		for(let value of object){
 			if(buffer){
-				buffer = Buffer.concat([buffer, this.type.encode(value)]);
+				this.type.encode(value, buffer, offset+local_offset);
 			}else{
-				buffer = this.type.encode(value);
+				tmp_buffer = Buffer.concat([tmp_buffer, this.type.encode(value)]);
 			}
+			local_offset += this.type.last_bytes_encoded;
 		}
-		this.last_bytes_encoded = buffer.length;
-		return buffer;
+		this.last_bytes_encoded = local_offset;
+		return buffer || tmp_buffer;
 	}
 	decode(buffer, offset){
 		if(!offset)
