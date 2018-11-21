@@ -114,92 +114,20 @@ String | A UTF-8 encoded string. Equivalent to Data with some post processing. C
 
 ## Benchmarks
 
-Below is a benchmark of storing _N_ values in a native `Set` object, a regular `{}` object, and the bloom filter. Combo tests first check existence with the bloom filter, then with the corresponding object/set. Keep in mind that the serialized filter occupies about 40 bytes of memory (in comparison to hudreds of megabytes in case of objects). A proper benchmark should perhaps attempt accessing the filesystem. Statistical report of false positives is printed with the `tests/domain.js` script. The following results are for a filter of length 10.
+The following benchmark results compare Protobuf to this implementation for some basic data structure and a long string of length at least N.
 
 ```
-native-set x 1,327,960 ops/sec ±1.64% (90 runs sampled)
-object x 3,470,091 ops/sec ±0.73% (92 runs sampled)
-bloom-filter x 392,695 ops/sec ±0.89% (90 runs sampled)
-Fastest Construction for N=10 is object
+protobuf x 222,406 ops/sec ±2.94% (89 runs sampled)
+binary-encoder x 26,046 ops/sec ±2.46% (90 runs sampled)
+Fastest Transcoding for N=10 is protobuf
 
-native-set x 9,716,608 ops/sec ±0.82% (96 runs sampled)
-object x 37,327,440 ops/sec ±1.42% (91 runs sampled)
-bloom-filter x 564,393 ops/sec ±0.57% (96 runs sampled)
-bloom-set-combo x 542,737 ops/sec ±1.39% (95 runs sampled)
-bloom-obj-combo x 562,978 ops/sec ±0.86% (92 runs sampled)
-Fastest Test for N=10 is object
+protobuf x 218,353 ops/sec ±1.50% (89 runs sampled)
+binary-encoder x 14,613 ops/sec ±1.83% (93 runs sampled)
+Fastest Transcoding for N=100 is protobuf
 
-native-set x 161,173 ops/sec ±1.69% (96 runs sampled)
-object x 440,619 ops/sec ±1.48% (90 runs sampled)
-bloom-filter x 29,438 ops/sec ±1.63% (93 runs sampled)
-Fastest Construction for N=100 is object
-
-native-set x 1,236,300 ops/sec ±0.38% (96 runs sampled)
-object x 4,965,125 ops/sec ±0.55% (92 runs sampled)
-bloom-filter x 39,475 ops/sec ±1.26% (96 runs sampled)
-bloom-set-combo x 38,792 ops/sec ±1.00% (96 runs sampled)
-bloom-obj-combo x 39,218 ops/sec ±1.10% (91 runs sampled)
-Fastest Test for N=100 is object
-
-native-set x 17,372 ops/sec ±1.25% (92 runs sampled)
-object x 49,233 ops/sec ±1.86% (94 runs sampled)
-bloom-filter x 2,821 ops/sec ±0.34% (96 runs sampled)
-Fastest Construction for N=1000 is object
-
-native-set x 89,938 ops/sec ±0.83% (92 runs sampled)
-object x 613,466 ops/sec ±0.51% (96 runs sampled)
-bloom-filter x 3,505 ops/sec ±0.35% (97 runs sampled)
-bloom-set-combo x 3,176 ops/sec ±0.93% (96 runs sampled)
-bloom-obj-combo x 3,414 ops/sec ±1.23% (94 runs sampled)
-Fastest Test for N=1000 is object
-
-native-set x 1,391 ops/sec ±0.92% (92 runs sampled)
-object x 5,610 ops/sec ±0.68% (97 runs sampled)
-bloom-filter x 279 ops/sec ±1.12% (87 runs sampled)
-Fastest Construction for N=10000 is object
-
-native-set x 6,410 ops/sec ±0.50% (97 runs sampled)
-object x 62,312 ops/sec ±1.21% (93 runs sampled)
-bloom-filter x 349 ops/sec ±0.49% (92 runs sampled)
-bloom-set-combo x 317 ops/sec ±1.09% (88 runs sampled)
-bloom-obj-combo x 335 ops/sec ±1.60% (88 runs sampled)
-Fastest Test for N=10000 is object
-
-native-set x 88.74 ops/sec ±2.83% (66 runs sampled)
-object x 261 ops/sec ±6.02% (64 runs sampled)
-bloom-filter x 28.08 ops/sec ±0.80% (50 runs sampled)
-Fastest Construction for N=100000 is object
-
-native-set x 400 ops/sec ±2.66% (86 runs sampled)
-object x 6,252 ops/sec ±1.34% (96 runs sampled)
-bloom-filter x 34.75 ops/sec ±1.24% (61 runs sampled)
-bloom-set-combo x 27.58 ops/sec ±1.95% (49 runs sampled)
-bloom-obj-combo x 34.21 ops/sec ±1.30% (60 runs sampled)
-Fastest Test for N=100000 is object
-
-native-set x 4.66 ops/sec ±4.47% (16 runs sampled)
-object x 16.91 ops/sec ±4.86% (38 runs sampled)
-bloom-filter x 2.72 ops/sec ±2.61% (11 runs sampled)
-Fastest Construction for N=1000000 is object
-
-native-set x 13.25 ops/sec ±3.54% (37 runs sampled)
-object x 636 ops/sec ±0.29% (93 runs sampled)
-bloom-filter x 3.50 ops/sec ±0.50% (13 runs sampled)
-bloom-set-combo x 2.28 ops/sec ±0.57% (10 runs sampled)
-bloom-obj-combo x 3.41 ops/sec ±4.01% (13 runs sampled)
-Fastest Test for N=1000000 is object
-
-native-set x 0.28 ops/sec ±2.43% (5 runs sampled)
-object x 1.53 ops/sec ±4.69% (9 runs sampled)
-bloom-filter x 0.27 ops/sec ±1.22% (5 runs sampled)
-Fastest Construction for N=10000000 is object
-
-native-set x 1.23 ops/sec ±1.58% (8 runs sampled)
-object x 63.08 ops/sec ±0.97% (65 runs sampled)
-bloom-filter x 0.35 ops/sec ±0.69% (5 runs sampled)
-bloom-set-combo x 0.22 ops/sec ±0.93% (5 runs sampled)
-bloom-obj-combo x 0.35 ops/sec ±0.65% (5 runs sampled)
-Fastest Test for N=10000000 is object
+protobuf x 175,375 ops/sec ±1.06% (91 runs sampled)
+binary-encoder x 1,812 ops/sec ±5.20% (78 runs sampled)
+Fastest Transcoding for N=1000 is protobuf
 ```
 
 ## Contributing
