@@ -1,0 +1,43 @@
+{
+  "name": "naive-binary-encoder",
+  "version": "0.1.0",
+  "description": "Fast and consistent binary encoding of data structures.",
+  "engines": {
+    "node": ">=8.9.0"
+  },
+  "main": "index.js",
+  "scripts": {
+    "coverage": "istanbul cover test.js",
+    "test": "node test.js | node node_modules/faucet/bin/cmd",
+    "docs": "node node_modules/jsdoc/jsdoc.js -c jsdoc.json",
+    "benchmark": "node benchmark.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/walasek/node-naive-binary-encoder.git"
+  },
+  "keywords": [
+    "nodejs",
+    "binary",
+    "encoding"
+  ],
+  "author": "Karol Walasek <coreconviction@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/walasek/node-naive-binary-encoder/issues"
+  },
+  "homepage": "https://github.com/walasek/node-naive-binary-encoder#readme",
+  "devDependencies": {
+    "benchmark": "^2.1.4",
+    "docdash": "^1.0.0",
+    "faucet": "0.0.1",
+    "glob": "^7.1.2",
+    "istanbul": "^0.4.5",
+    "jsdoc": "^3.5.5",
+    "zora": "^2.0.1"
+  },
+  "dependencies": {
+    "debug": "^4.1.0",
+    "varint": "^5.0.0"
+  }
+}
