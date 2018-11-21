@@ -31,5 +31,10 @@ module.exports = (t) => {
 		}, 'Decoding outside of the buffer throws');
 
 		t.throws(() => encoder.encode({}));
+
+		const max = 0xFFFFFFFF >>> 0;
+		t.equal(encoder.decode(encoder.encode(max)), max);
+		const max2 = max + 1;
+		t.notEqual(encoder.decode(encoder.encode(max)), max2);
 	});
 }

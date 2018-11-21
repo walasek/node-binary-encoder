@@ -1,5 +1,5 @@
 {
-  "name": "naive-binary-encoder",
+  "name": "binary-encoder",
   "version": "0.1.0",
   "description": "Fast and consistent binary encoding of data structures.",
   "engines": {
@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/walasek/node-naive-binary-encoder.git"
+    "url": "git+https://github.com/walasek/node-binary-encoder.git"
   },
   "keywords": [
     "nodejs",
@@ -24,9 +24,9 @@
   "author": "Karol Walasek <coreconviction@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/walasek/node-naive-binary-encoder/issues"
+    "url": "https://github.com/walasek/node-binary-encoder/issues"
   },
-  "homepage": "https://github.com/walasek/node-naive-binary-encoder#readme",
+  "homepage": "https://github.com/walasek/node-binary-encoder#readme",
   "devDependencies": {
     "benchmark": "^2.1.4",
     "docdash": "^1.0.0",

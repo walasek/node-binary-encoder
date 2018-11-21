@@ -1,7 +1,18 @@
 const TranscodableType = require('../Type');
 const Exceptions = require('../exceptions');
 
+/**
+ * @class
+ * A utility type that abstracts native Buffer's methods.
+ * @augments TranscodableType
+ */
 class BufferMethodIntType extends TranscodableType {
+	/**
+	 * @constructor
+	 * @param {function} write_method The function to use to write a value to a buffer.
+	 * @param {function} read_method The function to use to read a value from a buffer.
+	 * @param {number} size The size of read/written values.
+	 */
 	constructor(write_method, read_method, size){
 		super();
 		this.write_method = write_method;

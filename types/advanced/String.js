@@ -1,5 +1,13 @@
 const Data = require('./Data');
 
+/**
+ * @class
+ * A UTF-8 string type.
+ * @description Wraps {@link Data} with string conversion functions.
+ * @augments Data
+ * @augments TranscodableArray
+ * @augments TranscodableType
+ */
 class StringType extends Data {
 	encode(object, buffer, offset){
 		return super.encode(Buffer.from(object, 'utf8'), buffer, offset);

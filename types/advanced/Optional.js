@@ -4,7 +4,17 @@ const NullType = require('./Null');
 
 const SINGLETON_NULL_INSTANCE = new NullType();
 
+/**
+ * @class
+ * Make a value optional.
+ * @description Uses {@link OneOf} to allow the value to not be present at times at a cost of a byte.
+ * @augments TranscodableType
+ */
 class Optional extends TranscodableType {
+	/**
+	 * @constructor
+	 * @param {TranscodableType} subject The value type to be optional.
+	 */
 	constructor(subject){
 		super();
 		this.oneof = new OneOf({

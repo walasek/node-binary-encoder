@@ -3,6 +3,12 @@ const Exceptions = require('../exceptions');
 
 const varint = require('varint');
 
+/**
+ * @class
+ * A variable length encoded integer.
+ * @description Equivalent to Protobuf's Varint.
+ * @augments TranscodableType
+ */
 class Varint extends TranscodableType {
 	encode(object, buffer, offset){
 		if(typeof object !== 'number')

@@ -3,7 +3,17 @@ const Exceptions = require('../exceptions');
 
 // REMARKS: This implementation assumes that ordering of keys
 //          in an object will remain the same as in code.
+/**
+ * @class
+ * A collection of different values.
+ * @description Puts encoded values next to each other.
+ * @augments TranscodableType
+ */
 class Structure extends TranscodableType {
+	/**
+	 * @constructor
+	 * @param {Object} descriptor A map of keys and {@link TranscodableType}. All fields must be set when encoding.
+	 */
 	constructor(descriptor){
 		super();
 		this.descriptor = descriptor;

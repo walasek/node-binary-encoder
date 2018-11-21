@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>types/Structure.js - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BufferMethodIntType.html">BufferMethodIntType</a><ul class='methods'><li data-type='method'><a href="BufferMethodIntType.html#decode">decode</a></li><li data-type='method'><a href="BufferMethodIntType.html#encode">encode</a></li></ul></li><li><a href="Constant.html">Constant</a><ul class='methods'><li data-type='method'><a href="Constant.html#decode">decode</a></li><li data-type='method'><a href="Constant.html#encode">encode</a></li></ul></li><li><a href="Data.html">Data</a><ul class='methods'><li data-type='method'><a href="Data.html#decode">decode</a></li><li data-type='method'><a href="Data.html#encode">encode</a></li></ul></li><li><a href="OneOf.html">OneOf</a><ul class='methods'><li data-type='method'><a href="OneOf.html#decode">decode</a></li><li data-type='method'><a href="OneOf.html#encode">encode</a></li></ul></li><li><a href="Optional.html">Optional</a><ul class='methods'><li data-type='method'><a href="Optional.html#decode">decode</a></li><li data-type='method'><a href="Optional.html#encode">encode</a></li></ul></li><li><a href="StringType.html">StringType</a><ul class='methods'><li data-type='method'><a href="StringType.html#decode">decode</a></li><li data-type='method'><a href="StringType.html#encode">encode</a></li></ul></li><li><a href="Structure.html">Structure</a><ul class='methods'><li data-type='method'><a href="Structure.html#decode">decode</a></li><li data-type='method'><a href="Structure.html#encode">encode</a></li></ul></li><li><a href="TranscodableArray.html">TranscodableArray</a><ul class='methods'><li data-type='method'><a href="TranscodableArray.html#decode">decode</a></li><li data-type='method'><a href="TranscodableArray.html#encode">encode</a></li></ul></li><li><a href="TranscodableType.html">TranscodableType</a><ul class='methods'><li data-type='method'><a href="TranscodableType.html#decode">decode</a></li><li data-type='method'><a href="TranscodableType.html#encode">encode</a></li></ul></li><li><a href="Uint8.html">Uint8</a><ul class='methods'><li data-type='method'><a href="Uint8.html#decode">decode</a></li><li data-type='method'><a href="Uint8.html#encode">encode</a></li></ul></li><li><a href="Uint32.html">Uint32</a><ul class='methods'><li data-type='method'><a href="Uint32.html#decode">decode</a></li><li data-type='method'><a href="Uint32.html#encode">encode</a></li></ul></li><li><a href="Varint.html">Varint</a><ul class='methods'><li data-type='method'><a href="Varint.html#decode">decode</a></li><li data-type='method'><a href="Varint.html#encode">encode</a></li></ul></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">types/Structure.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const TranscodableType = require('../Type');
+const Exceptions = require('../exceptions');
+
+// REMARKS: This implementation assumes that ordering of keys
+//          in an object will remain the same as in code.
+/**
+ * @class
+ * A collection of different values.
+ * @description Puts encoded values next to each other.
+ * @augments TranscodableType
+ */
+class Structure extends TranscodableType {
+	/**
+	 * @constructor
+	 * @param {Object} descriptor A map of keys and {@link TranscodableType}. All fields must be set when encoding.
+	 */
+	constructor(descriptor){
+		super();
+		this.descriptor = descriptor;
+		this.fields = Object.keys(this.descriptor);
+	}
+	encode(object, buffer_unused, offset){
+		// TODO: Implement buffers through argument
+		let buffer;
+		for(let i = 0; i &lt; this.fields.length; i++){
+			/*if(!object[this.fields[i]])
+				throw new Exceptions.MissingFields('Cannot encode a partial structure, missing: '+this.fields[i]);*/
+			if(!(this.descriptor[this.fields[i]] instanceof TranscodableType))
+				throw new Exceptions.InvalidDescriptor('Bad descriptor for field '+this.fields[i]);
+			const field_encoded = this.descriptor[this.fields[i]].encode(object[this.fields[i]]);
+			if(!buffer){
+				buffer = field_encoded;
+			}else{
+				buffer = Buffer.concat([buffer, field_encoded]);
+			}
+		}
+		this.last_bytes_encoded = buffer ? buffer.length : 0;
+		return buffer || Buffer.from([]);
+	}
+	decode(buffer, offset){
+		if(!offset)
+			offset = 0;
+		let local_offset = 0;
+		const obj = {};
+		for(let i = 0; i &lt; this.fields.length; i++){
+			const field_decoded = this.descriptor[this.fields[i]].decode(buffer, offset+local_offset);
+			local_offset += this.descriptor[this.fields[i]].last_bytes_decoded;
+			obj[this.fields[i]] = field_decoded;
+		}
+		this.last_bytes_decoded = local_offset;
+		return obj;
+	}
+}
+
+module.exports = Structure;</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Nov 21 2018 17:37:39 GMT+0100 (Central European Standard Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+
+
+</body>
+</html>

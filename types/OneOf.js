@@ -2,7 +2,17 @@ const TranscodableType = require('../Type');
 const Exceptions = require('../exceptions');
 const Varint = require('./Varint');
 
+/**
+ * @class
+ * An encoder that allows only one definition to be encoded at a time.
+ * @description Encodes a _Varint_ with an identifier and encoded data.
+ * @augments TranscodableType
+ */
 class OneOf extends TranscodableType {
+	/**
+	 * @constructor
+	 * @param {Object} descriptor A map of keys and {@link TranscodableType}. When encoding only one key can be set.
+	 */
 	constructor(descriptor){
 		super();
 		this.descriptor = descriptor;

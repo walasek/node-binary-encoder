@@ -133,6 +133,6 @@ module.exports = (t) => {
 		const enc = empty.encode({});
 		t.equal(enc.length, 0);
 
-		t.throws(() => empty.encode({A: 1}));
+		empty.encode({A: 1}); // Doesn't throw
 	})
 }

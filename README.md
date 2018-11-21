@@ -39,8 +39,78 @@ Beware this project is still in development. There may be serious bugs or perfor
 Documentation is available [here](https://walasek.github.io/node-binary-encoder/).
 
 ```javascript
-// TODO
+const bin = require('binary-encoder');
+
+// A basic structure definition
+const Person = bin.Structure({
+    first_name: bin.String(),
+    age: bin.Uint32(),
+});
+
+const Image = bin.Structure({
+    binary: bin.Data(),
+});
+const Link = bin.Structure({
+    url: bin.String(),
+});
+
+// A Protobuf-style OneOf union
+const Attachment = bin.OneOf({
+    image: Image,
+    link: Link,
+});
+
+// Definitions can be nested
+const MyMessage = bin.Structure({
+    title: bin.String(),
+    from: Person,
+    to: Person,
+    content: bin.String(),
+    attachments: bin.Array(Attachment),
+});
+
+// Any type or definition can be encoded and decoded
+const my_message = {
+    title: 'binary-encoder',
+    from: {first_name: 'Karol', age: 25},
+    to: {first_name: 'Jon', age: 30},
+    content: 'This library is awesome!',
+    attachments: [
+        {link: {url: 'https://github.com/walasek/node-binary-encoder'}},
+    ],
+};
+const buffer = MyMessage.encode(my_message);
+// socket.send(buffer); fs.writeFileSync(..., buffer); or something else here
+// ...
+// socket.on('data', ...); fs.readFilesync(...); or something else here
+const message = MyMessage.decode(buffer);
+// t.deepEqual(message, my_message, 'This would pass');
 ```
+
+## API
+
+### Basic Types
+Type | Usage | Size
+--- | --- | ---
+Uint8 | A byte of data (value range 0-255) | 1
+Uint32 | Little-endian unsigned int (0-(2^32-1)) | 4
+Varint | A Protobuf-style Varint, same value range as Uint32 | 1-5
+Implementing [U]Int* variants is trivial.
+
+### Structures
+Type | Usage | Size
+--- | --- | ---
+Structure | An object that maps types to keys. Order matters. All fields must be present, additional fields that are not declared earlier will not be encoded. | Sum of fields
+Array | A list of values (can be of any type). Variable length by default, can be set as fixed size. | Sum of values (+ _Varint_ size if the array is not fixed size)
+OneOf | Protobuf-style _OneOf_ which allows only one member to be encoded. Can be considered as a C-style _union_. | _Varint_ size + value size
+
+### Advanced Types
+Type | Usage | Size
+--- | --- | ---
+Constant | A Uint8 constant. If attempting to decode or encode a different value an exception is thrown. | 1 (Uint8)
+Optional | Marks a field as optional (null if not present). | 1 + value size (if set)
+Data | A generic binary buffer. Equivalent to an Array of Uint8's. Can be fixed size. | (Array)
+String | A UTF-8 encoded string. Equivalent to Data with some post processing. Can be fixed size. | (Array)
 
 ## Benchmarks
 

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>Home - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BufferMethodIntType.html">BufferMethodIntType</a><ul class='methods'><li data-type='method'><a href="BufferMethodIntType.html#decode">decode</a></li><li data-type='method'><a href="BufferMethodIntType.html#encode">encode</a></li></ul></li><li><a href="Constant.html">Constant</a><ul class='methods'><li data-type='method'><a href="Constant.html#decode">decode</a></li><li data-type='method'><a href="Constant.html#encode">encode</a></li></ul></li><li><a href="Data.html">Data</a><ul class='methods'><li data-type='method'><a href="Data.html#decode">decode</a></li><li data-type='method'><a href="Data.html#encode">encode</a></li></ul></li><li><a href="OneOf.html">OneOf</a><ul class='methods'><li data-type='method'><a href="OneOf.html#decode">decode</a></li><li data-type='method'><a href="OneOf.html#encode">encode</a></li></ul></li><li><a href="Optional.html">Optional</a><ul class='methods'><li data-type='method'><a href="Optional.html#decode">decode</a></li><li data-type='method'><a href="Optional.html#encode">encode</a></li></ul></li><li><a href="StringType.html">StringType</a><ul class='methods'><li data-type='method'><a href="StringType.html#decode">decode</a></li><li data-type='method'><a href="StringType.html#encode">encode</a></li></ul></li><li><a href="Structure.html">Structure</a><ul class='methods'><li data-type='method'><a href="Structure.html#decode">decode</a></li><li data-type='method'><a href="Structure.html#encode">encode</a></li></ul></li><li><a href="TranscodableArray.html">TranscodableArray</a><ul class='methods'><li data-type='method'><a href="TranscodableArray.html#decode">decode</a></li><li data-type='method'><a href="TranscodableArray.html#encode">encode</a></li></ul></li><li><a href="TranscodableType.html">TranscodableType</a><ul class='methods'><li data-type='method'><a href="TranscodableType.html#decode">decode</a></li><li data-type='method'><a href="TranscodableType.html#encode">encode</a></li></ul></li><li><a href="Uint8.html">Uint8</a><ul class='methods'><li data-type='method'><a href="Uint8.html#decode">decode</a></li><li data-type='method'><a href="Uint8.html#encode">encode</a></li></ul></li><li><a href="Uint32.html">Uint32</a><ul class='methods'><li data-type='method'><a href="Uint32.html#decode">decode</a></li><li data-type='method'><a href="Uint32.html#encode">encode</a></li></ul></li><li><a href="Varint.html">Varint</a><ul class='methods'><li data-type='method'><a href="Varint.html#decode">decode</a></li><li data-type='method'><a href="Varint.html#encode">encode</a></li></ul></li></ul>
+</nav>
+
+<div id="main">
+    
+
+    
+
+
+
+    
+
+
+
+
+
+
+
+
+
+    
+
+
+    <section class="readme">
+        <article><h1><a href="https://github.com/walasek/node-binary-encoder">node-binary-encoder</a> <a href="https://travis-ci.org/walasek/node-binary-encoder"><img src="https://img.shields.io/travis/walasek/node-binary-encoder.svg?style=flat-square" alt="Build Status"></a> <a href="https://www.npmjs.com/walasek/node-binary-encoder"><img src="https://img.shields.io/npm/v/binary-encoder.svg?style=flat-square" alt="Package Version"></a> <img src="https://img.shields.io/npm/l/binary-encoder.svg?style=flat-square" alt="License"> <a href="https://david-dm.org/walasek/node-binary-encoder.svg"><img src="https://david-dm.org/walasek/node-binary-encoder.svg" alt="Dependencies"></a>  <a href="https://codecov.io/gh/walasek/node-binary-encoder"><img src="https://codecov.io/gh/walasek/node-binary-encoder/branch/master/graph/badge.svg" alt="codecov"></a></h1><p>Quick and consistent binary encoding of data structures.</p>
+<hr>
+<h2>Goal</h2><p>Encoding data in raw buffers is a difficult task especially in terms of description of the encoding end decoding process. This project aims to deliver tools for easy description of data structures that can be encoded into raw buffers, and decoded from raw buffers and data streams.</p>
+<h2>Installation</h2><p>Node <code>&gt;=8.9.0</code> is required.</p>
+<pre class="prettyprint source lang-bash"><code>npm install --save binary-encoder</code></pre><p>To perform tests use:</p>
+<pre class="prettyprint source lang-bash"><code>cd node_modules/binary-encoder
+npm i
+npm t</code></pre><p>This project also has a benchmark that you can run yourself:</p>
+<pre class="prettyprint source lang-bash"><code>cd node_modules/binary-encoder
+npm i
+npm run benchmark</code></pre><h2>Usage</h2><p>Beware this project is still in development. There may be serious bugs or performance issues over time.</p>
+<p>Documentation is available <a href="https://walasek.github.io/node-binary-encoder/">here</a>.</p>
+<pre class="prettyprint source lang-javascript"><code>const bin = require('binary-encoder');
+
+// A basic structure definition
+const Person = bin.Structure({
+    first_name: bin.String(),
+    age: bin.Uint32(),
+});
+
+const Image = bin.Structure({
+    binary: bin.Data(),
+});
+const Link = bin.Structure({
+    url: bin.String(),
+});
+
+// A Protobuf-style OneOf union
+const Attachment = bin.OneOf({
+    image: Image,
+    link: Link,
+});
+
+// Definitions can be nested
+const MyMessage = bin.Structure({
+    title: bin.String(),
+    from: Person,
+    to: Person,
+    content: bin.String(),
+    attachments: bin.Array(Attachment),
+});
+
+// Any type or definition can be encoded and decoded
+const my_message = {
+    title: 'binary-encoder',
+    from: {first_name: 'Karol', age: 25},
+    to: {first_name: 'Jon', age: 30},
+    content: 'This library is awesome!',
+    attachments: [
+        {link: {url: 'https://github.com/walasek/node-binary-encoder'}},
+    ],
+};
+const buffer = MyMessage.encode(my_message);
+// socket.send(buffer); fs.writeFileSync(..., buffer); or something else here
+// ...
+// socket.on('data', ...); fs.readFilesync(...); or something else here
+const message = MyMessage.decode(buffer);
+// t.deepEqual(message, my_message, 'This would pass');</code></pre><h2>API</h2><h3>Basic Types</h3><table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Usage</th>
+<th>Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Uint8</td>
+<td>A byte of data (value range 0-255)</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Uint32</td>
+<td>Little-endian unsigned int (0-(2^32-1))</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Varint</td>
+<td>A Protobuf-style Varint, same value range as Uint32</td>
+<td>1-5</td>
+</tr>
+</tbody>
+</table>
+<p>Implementing [U]Int* variants is trivial.</p>
+<h3>Structures</h3><table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Usage</th>
+<th>Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Structure</td>
+<td>An object that maps types to keys. Order matters. All fields must be present, additional fields that are not declared earlier will not be encoded.</td>
+<td>Sum of fields</td>
+</tr>
+<tr>
+<td>Array</td>
+<td>A list of values (can be of any type). Variable length by default, can be set as fixed size.</td>
+<td>Sum of values (+ <em>Varint</em> size if the array is not fixed size)</td>
+</tr>
+<tr>
+<td>OneOf</td>
+<td>Protobuf-style <em>OneOf</em> which allows only one member to be encoded. Can be considered as a C-style <em>union</em>.</td>
+<td><em>Varint</em> size + value size</td>
+</tr>
+</tbody>
+</table>
+<h3>Advanced Types</h3><table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Usage</th>
+<th>Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Constant</td>
+<td>A Uint8 constant. If attempting to decode or encode a different value an exception is thrown.</td>
+<td>1 (Uint8)</td>
+</tr>
+<tr>
+<td>Optional</td>
+<td>Marks a field as optional (null if not present).</td>
+<td>1 + value size (if set)</td>
+</tr>
+<tr>
+<td>Data</td>
+<td>A generic binary buffer. Equivalent to an Array of Uint8's. Can be fixed size.</td>
+<td>(Array)</td>
+</tr>
+<tr>
+<td>String</td>
+<td>A UTF-8 encoded string. Equivalent to Data with some post processing. Can be fixed size.</td>
+<td>(Array)</td>
+</tr>
+</tbody>
+</table>
+<h2>Benchmarks</h2><p>Below is a benchmark of storing _N_ values in a native <code>Set</code> object, a regular <code>{}</code> object, and the bloom filter. Combo tests first check existence with the bloom filter, then with the corresponding object/set. Keep in mind that the serialized filter occupies about 40 bytes of memory (in comparison to hudreds of megabytes in case of objects). A proper benchmark should perhaps attempt accessing the filesystem. Statistical report of false positives is printed with the <code>tests/domain.js</code> script. The following results are for a filter of length 10.</p>
+<pre class="prettyprint source"><code>native-set x 1,327,960 ops/sec ±1.64% (90 runs sampled)
+object x 3,470,091 ops/sec ±0.73% (92 runs sampled)
+bloom-filter x 392,695 ops/sec ±0.89% (90 runs sampled)
+Fastest Construction for N=10 is object
+
+native-set x 9,716,608 ops/sec ±0.82% (96 runs sampled)
+object x 37,327,440 ops/sec ±1.42% (91 runs sampled)
+bloom-filter x 564,393 ops/sec ±0.57% (96 runs sampled)
+bloom-set-combo x 542,737 ops/sec ±1.39% (95 runs sampled)
+bloom-obj-combo x 562,978 ops/sec ±0.86% (92 runs sampled)
+Fastest Test for N=10 is object
+
+native-set x 161,173 ops/sec ±1.69% (96 runs sampled)
+object x 440,619 ops/sec ±1.48% (90 runs sampled)
+bloom-filter x 29,438 ops/sec ±1.63% (93 runs sampled)
+Fastest Construction for N=100 is object
+
+native-set x 1,236,300 ops/sec ±0.38% (96 runs sampled)
+object x 4,965,125 ops/sec ±0.55% (92 runs sampled)
+bloom-filter x 39,475 ops/sec ±1.26% (96 runs sampled)
+bloom-set-combo x 38,792 ops/sec ±1.00% (96 runs sampled)
+bloom-obj-combo x 39,218 ops/sec ±1.10% (91 runs sampled)
+Fastest Test for N=100 is object
+
+native-set x 17,372 ops/sec ±1.25% (92 runs sampled)
+object x 49,233 ops/sec ±1.86% (94 runs sampled)
+bloom-filter x 2,821 ops/sec ±0.34% (96 runs sampled)
+Fastest Construction for N=1000 is object
+
+native-set x 89,938 ops/sec ±0.83% (92 runs sampled)
+object x 613,466 ops/sec ±0.51% (96 runs sampled)
+bloom-filter x 3,505 ops/sec ±0.35% (97 runs sampled)
+bloom-set-combo x 3,176 ops/sec ±0.93% (96 runs sampled)
+bloom-obj-combo x 3,414 ops/sec ±1.23% (94 runs sampled)
+Fastest Test for N=1000 is object
+
+native-set x 1,391 ops/sec ±0.92% (92 runs sampled)
+object x 5,610 ops/sec ±0.68% (97 runs sampled)
+bloom-filter x 279 ops/sec ±1.12% (87 runs sampled)
+Fastest Construction for N=10000 is object
+
+native-set x 6,410 ops/sec ±0.50% (97 runs sampled)
+object x 62,312 ops/sec ±1.21% (93 runs sampled)
+bloom-filter x 349 ops/sec ±0.49% (92 runs sampled)
+bloom-set-combo x 317 ops/sec ±1.09% (88 runs sampled)
+bloom-obj-combo x 335 ops/sec ±1.60% (88 runs sampled)
+Fastest Test for N=10000 is object
+
+native-set x 88.74 ops/sec ±2.83% (66 runs sampled)
+object x 261 ops/sec ±6.02% (64 runs sampled)
+bloom-filter x 28.08 ops/sec ±0.80% (50 runs sampled)
+Fastest Construction for N=100000 is object
+
+native-set x 400 ops/sec ±2.66% (86 runs sampled)
+object x 6,252 ops/sec ±1.34% (96 runs sampled)
+bloom-filter x 34.75 ops/sec ±1.24% (61 runs sampled)
+bloom-set-combo x 27.58 ops/sec ±1.95% (49 runs sampled)
+bloom-obj-combo x 34.21 ops/sec ±1.30% (60 runs sampled)
+Fastest Test for N=100000 is object
+
+native-set x 4.66 ops/sec ±4.47% (16 runs sampled)
+object x 16.91 ops/sec ±4.86% (38 runs sampled)
+bloom-filter x 2.72 ops/sec ±2.61% (11 runs sampled)
+Fastest Construction for N=1000000 is object
+
+native-set x 13.25 ops/sec ±3.54% (37 runs sampled)
+object x 636 ops/sec ±0.29% (93 runs sampled)
+bloom-filter x 3.50 ops/sec ±0.50% (13 runs sampled)
+bloom-set-combo x 2.28 ops/sec ±0.57% (10 runs sampled)
+bloom-obj-combo x 3.41 ops/sec ±4.01% (13 runs sampled)
+Fastest Test for N=1000000 is object
+
+native-set x 0.28 ops/sec ±2.43% (5 runs sampled)
+object x 1.53 ops/sec ±4.69% (9 runs sampled)
+bloom-filter x 0.27 ops/sec ±1.22% (5 runs sampled)
+Fastest Construction for N=10000000 is object
+
+native-set x 1.23 ops/sec ±1.58% (8 runs sampled)
+object x 63.08 ops/sec ±0.97% (65 runs sampled)
+bloom-filter x 0.35 ops/sec ±0.69% (5 runs sampled)
+bloom-set-combo x 0.22 ops/sec ±0.93% (5 runs sampled)
+bloom-obj-combo x 0.35 ops/sec ±0.65% (5 runs sampled)
+Fastest Test for N=10000000 is object</code></pre><h2>Contributing</h2><p>The source is documented with JSDoc. To generate the documentation use:</p>
+<pre class="prettyprint source lang-bash"><code>npm run docs</code></pre><p>Extra debugging information is printed using the <code>debug</code> module:</p>
+<pre class="prettyprint source lang-bash"><code>DEBUG=binary-encoder:* npm t</code></pre><p>The documentation will be put in the new <code>docs</code> directory.</p>
+<p>To introduce an improvement please fork this project, commit changes in a new branch to your fork and add a pull request on this repository pointing at your fork. Please follow these style recommendations when working on the code:</p>
+<ul>
+<li>Use tabs (yup).</li>
+<li>Use <code>async</code>/<code>await</code> and/or <code>Promise</code> where possible.</li>
+<li>Features must be properly tested.</li>
+<li>New methods must be properly documented with <code>jscode</code> style comments.</li>
+</ul></article>
+    </section>
+
+
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Nov 21 2018 17:37:39 GMT+0100 (Central European Standard Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+
+
+</body>
+</html>

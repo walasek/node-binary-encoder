@@ -1,5 +1,6 @@
 const TranscodableType = require('../../Type');
 
+// A dummy type
 class NullType extends TranscodableType {
 	encode(){
 		this.last_bytes_encoded = 0;
