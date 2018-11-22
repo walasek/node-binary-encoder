@@ -22,6 +22,12 @@ module.exports = (t) => {
 		t.throws(() => {
 			BasicStructure.decode(enlarged_o1, 5);
 		});
+
+		const buf = Buffer.allocUnsafe(16);
+		const enc3 = BasicStructure.encode({A: 4}, buf, 1);
+		t.equal(buf[1], 4);
+		const dec3 = BasicStructure.decode(enc3, 1);
+		t.equal(dec3.A, 4);
 	});
 
 	t.test('Missing fields test', (t) => {

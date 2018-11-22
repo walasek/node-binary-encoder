@@ -27,6 +27,8 @@ class Data extends TranscodableType {
 			if(object.length !== this.size)
 				throw new Exceptions.InvalidEncodeValue('Expected Buffer of size '+this.size);
 			if(buffer){
+				if(buffer.length-offset < object.length)
+					throw new Exceptions.BufferTooSmall('Could not encode data using a temporary buffer.');
 				object.copy(buffer, offset);
 			}else{
 				buffer = object;
@@ -37,6 +39,8 @@ class Data extends TranscodableType {
 		if(buffer){
 			this.Varint.encode(object.length, buffer, offset);
 			let local_offset = this.Varint.last_bytes_encoded;
+			if(buffer.length-offset-local_offset < object.length)
+				throw new Exceptions.BufferTooSmall('Could not encode data using a temporary buffer.');
 			object.copy(buffer, local_offset+offset);
 			this.last_bytes_encoded = local_offset+object.length;
 			return buffer;

@@ -24,5 +24,11 @@ module.exports = (t) => {
 		t.throws(() => MyUnion.encode({C: 1}));
 		enc2[0] = 0xFE;
 		t.throws(() => MyUnion.decode(enc2));
+
+		const buf = Buffer.allocUnsafe(16);
+		const enc4 = MyUnion.encode({A: 1}, buf, 1);
+		t.equal(buf[2], 1);
+		const dec4 = MyUnion.decode(enc4, 1);
+		t.equal(dec4.A, 1);
 	});
 }
