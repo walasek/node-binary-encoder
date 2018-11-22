@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>types/advanced/Optional.js - Documentation</title>
+    <title>types/Data.js - Documentation</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -31,7 +31,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">types/advanced/Optional.js</h1>
+    <h1 class="page-title">types/Data.js</h1>
     
 
     
@@ -41,48 +41,72 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>const OneOf = require('../OneOf');
+            <pre class="prettyprint source linenums"><code>const Exceptions = require('../../exceptions');
 const TranscodableType = require('../../Type');
-const NullType = require('./Null');
-
-const SINGLETON_NULL_INSTANCE = new NullType();
+const Varint = require('../Varint');
 
 /**
  * @class
- * Make a value optional.
- * @description Uses {@link OneOf} to allow the value to not be present at times at a cost of a byte.
+ * A data buffer.
+ * @description Operates on raw buffers.
  * @augments TranscodableType
  */
-class Optional extends TranscodableType {
+class Data extends TranscodableType {
 	/**
 	 * @constructor
-	 * @param {TranscodableType} subject The value type to be optional.
+	 * @param {Number} fixed_size Make the buffer fixed size always.
 	 */
-	constructor(subject){
+	constructor(fixed_size){
 		super();
-		this.oneof = new OneOf({
-			is_set: subject,
-			is_null: SINGLETON_NULL_INSTANCE,
-		});
+		this.size = fixed_size;
+		this.Varint = new Varint();
 	}
 	encode(object, buffer, offset){
-		let result;
-		if(object){
-			result = this.oneof.encode({is_set: object}, buffer, offset);
-		}else{
-			result = this.oneof.encode({is_null: true}, buffer, offset);
+		if(!offset)
+			offset = 0;
+		if(!(object instanceof Buffer))
+			throw new Exceptions.InvalidEncodeValue('Expected a Buffer');
+		if(this.size){
+			if(object.length !== this.size)
+				throw new Exceptions.InvalidEncodeValue('Expected Buffer of size '+this.size);
+			if(buffer){
+				object.copy(buffer, offset);
+			}else{
+				buffer = object;
+			}
+			this.last_bytes_encoded = object.length;
+			return buffer;
 		}
-		this.last_bytes_encoded = result.length;
-		return result;
+		if(buffer){
+			this.Varint.encode(object.length, buffer, offset);
+			let local_offset = this.Varint.last_bytes_encoded;
+			object.copy(buffer, local_offset+offset);
+			this.last_bytes_encoded = local_offset+object.length;
+			return buffer;
+		}else{
+			const result = Buffer.concat([this.Varint.encode(object.length), object]);
+			this.last_bytes_encoded = result.length;
+			return result;
+		}
 	}
 	decode(buffer, offset){
-		const obj = this.oneof.decode(buffer, offset);
-		this.last_bytes_decoded = this.oneof.last_bytes_decoded;
-		return obj.is_set || null;
+		if(!offset)
+			offset = 0;
+		if(this.size){
+			const slice = buffer.slice(offset, this.size);
+			this.last_bytes_decoded = slice;
+			return slice;
+		}else{
+			const size = this.Varint.decode(buffer, offset);
+			let local_offset = this.Varint.last_bytes_decoded;
+			const slice = buffer.slice(offset+local_offset, offset+local_offset+size);
+			this.last_bytes_decoded = local_offset + size;
+			return slice;
+		}
 	}
 }
 
-module.exports = Optional;</code></pre>
+module.exports = Data;</code></pre>
         </article>
     </section>
 

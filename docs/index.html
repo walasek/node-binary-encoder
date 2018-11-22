@@ -191,90 +191,36 @@ const message = MyMessage.decode(buffer);
 </tr>
 </tbody>
 </table>
-<h2>Benchmarks</h2><p>Below is a benchmark of storing _N_ values in a native <code>Set</code> object, a regular <code>{}</code> object, and the bloom filter. Combo tests first check existence with the bloom filter, then with the corresponding object/set. Keep in mind that the serialized filter occupies about 40 bytes of memory (in comparison to hudreds of megabytes in case of objects). A proper benchmark should perhaps attempt accessing the filesystem. Statistical report of false positives is printed with the <code>tests/domain.js</code> script. The following results are for a filter of length 10.</p>
-<pre class="prettyprint source"><code>native-set x 1,327,960 ops/sec ±1.64% (90 runs sampled)
-object x 3,470,091 ops/sec ±0.73% (92 runs sampled)
-bloom-filter x 392,695 ops/sec ±0.89% (90 runs sampled)
-Fastest Construction for N=10 is object
+<h2>Benchmarks</h2><p>The following benchmark results compare Protobuf to this implementation for some basic data structure and a long string of length at least N. <code>binary-encoder-buf</code> uses a preallocated buffer for all operations.</p>
+<pre class="prettyprint source"><code>protobuf x 243,121 ops/sec ±3.58% (86 runs sampled)
+binary-encoder x 73,333 ops/sec ±2.17% (90 runs sampled)
+binary-encoder-buf x 159,013 ops/sec ±2.34% (89 runs sampled)
+json x 251,349 ops/sec ±1.19% (90 runs sampled)
+Fastest Transcoding for N=10 is json
 
-native-set x 9,716,608 ops/sec ±0.82% (96 runs sampled)
-object x 37,327,440 ops/sec ±1.42% (91 runs sampled)
-bloom-filter x 564,393 ops/sec ±0.57% (96 runs sampled)
-bloom-set-combo x 542,737 ops/sec ±1.39% (95 runs sampled)
-bloom-obj-combo x 562,978 ops/sec ±0.86% (92 runs sampled)
-Fastest Test for N=10 is object
+protobuf x 252,062 ops/sec ±2.13% (92 runs sampled)
+binary-encoder x 71,901 ops/sec ±2.26% (92 runs sampled)
+binary-encoder-buf x 158,841 ops/sec ±1.45% (93 runs sampled)
+json x 224,417 ops/sec ±1.52% (94 runs sampled)
+Fastest Transcoding for N=100 is protobuf
 
-native-set x 161,173 ops/sec ±1.69% (96 runs sampled)
-object x 440,619 ops/sec ±1.48% (90 runs sampled)
-bloom-filter x 29,438 ops/sec ±1.63% (93 runs sampled)
-Fastest Construction for N=100 is object
+protobuf x 197,825 ops/sec ±1.72% (84 runs sampled)
+binary-encoder x 65,152 ops/sec ±1.36% (90 runs sampled)
+binary-encoder-buf x 138,347 ops/sec ±1.97% (92 runs sampled)
+json x 119,051 ops/sec ±2.29% (89 runs sampled)
+Fastest Transcoding for N=1000 is protobuf
 
-native-set x 1,236,300 ops/sec ±0.38% (96 runs sampled)
-object x 4,965,125 ops/sec ±0.55% (92 runs sampled)
-bloom-filter x 39,475 ops/sec ±1.26% (96 runs sampled)
-bloom-set-combo x 38,792 ops/sec ±1.00% (96 runs sampled)
-bloom-obj-combo x 39,218 ops/sec ±1.10% (91 runs sampled)
-Fastest Test for N=100 is object
+protobuf x 67,883 ops/sec ±2.63% (74 runs sampled)
+binary-encoder x 30,369 ops/sec ±4.00% (84 runs sampled)
+binary-encoder-buf x 59,281 ops/sec ±1.37% (91 runs sampled)
+json x 23,988 ops/sec ±0.81% (94 runs sampled)
+Fastest Transcoding for N=10000 is protobuf
 
-native-set x 17,372 ops/sec ±1.25% (92 runs sampled)
-object x 49,233 ops/sec ±1.86% (94 runs sampled)
-bloom-filter x 2,821 ops/sec ±0.34% (96 runs sampled)
-Fastest Construction for N=1000 is object
-
-native-set x 89,938 ops/sec ±0.83% (92 runs sampled)
-object x 613,466 ops/sec ±0.51% (96 runs sampled)
-bloom-filter x 3,505 ops/sec ±0.35% (97 runs sampled)
-bloom-set-combo x 3,176 ops/sec ±0.93% (96 runs sampled)
-bloom-obj-combo x 3,414 ops/sec ±1.23% (94 runs sampled)
-Fastest Test for N=1000 is object
-
-native-set x 1,391 ops/sec ±0.92% (92 runs sampled)
-object x 5,610 ops/sec ±0.68% (97 runs sampled)
-bloom-filter x 279 ops/sec ±1.12% (87 runs sampled)
-Fastest Construction for N=10000 is object
-
-native-set x 6,410 ops/sec ±0.50% (97 runs sampled)
-object x 62,312 ops/sec ±1.21% (93 runs sampled)
-bloom-filter x 349 ops/sec ±0.49% (92 runs sampled)
-bloom-set-combo x 317 ops/sec ±1.09% (88 runs sampled)
-bloom-obj-combo x 335 ops/sec ±1.60% (88 runs sampled)
-Fastest Test for N=10000 is object
-
-native-set x 88.74 ops/sec ±2.83% (66 runs sampled)
-object x 261 ops/sec ±6.02% (64 runs sampled)
-bloom-filter x 28.08 ops/sec ±0.80% (50 runs sampled)
-Fastest Construction for N=100000 is object
-
-native-set x 400 ops/sec ±2.66% (86 runs sampled)
-object x 6,252 ops/sec ±1.34% (96 runs sampled)
-bloom-filter x 34.75 ops/sec ±1.24% (61 runs sampled)
-bloom-set-combo x 27.58 ops/sec ±1.95% (49 runs sampled)
-bloom-obj-combo x 34.21 ops/sec ±1.30% (60 runs sampled)
-Fastest Test for N=100000 is object
-
-native-set x 4.66 ops/sec ±4.47% (16 runs sampled)
-object x 16.91 ops/sec ±4.86% (38 runs sampled)
-bloom-filter x 2.72 ops/sec ±2.61% (11 runs sampled)
-Fastest Construction for N=1000000 is object
-
-native-set x 13.25 ops/sec ±3.54% (37 runs sampled)
-object x 636 ops/sec ±0.29% (93 runs sampled)
-bloom-filter x 3.50 ops/sec ±0.50% (13 runs sampled)
-bloom-set-combo x 2.28 ops/sec ±0.57% (10 runs sampled)
-bloom-obj-combo x 3.41 ops/sec ±4.01% (13 runs sampled)
-Fastest Test for N=1000000 is object
-
-native-set x 0.28 ops/sec ±2.43% (5 runs sampled)
-object x 1.53 ops/sec ±4.69% (9 runs sampled)
-bloom-filter x 0.27 ops/sec ±1.22% (5 runs sampled)
-Fastest Construction for N=10000000 is object
-
-native-set x 1.23 ops/sec ±1.58% (8 runs sampled)
-object x 63.08 ops/sec ±0.97% (65 runs sampled)
-bloom-filter x 0.35 ops/sec ±0.69% (5 runs sampled)
-bloom-set-combo x 0.22 ops/sec ±0.93% (5 runs sampled)
-bloom-obj-combo x 0.35 ops/sec ±0.65% (5 runs sampled)
-Fastest Test for N=10000000 is object</code></pre><h2>Contributing</h2><p>The source is documented with JSDoc. To generate the documentation use:</p>
+protobuf x 11,065 ops/sec ±4.38% (81 runs sampled)
+binary-encoder x 6,191 ops/sec ±5.16% (84 runs sampled)
+binary-encoder-buf x 9,975 ops/sec ±2.12% (90 runs sampled)
+json x 2,642 ops/sec ±0.92% (95 runs sampled)
+Fastest Transcoding for N=100000 is protobuf</code></pre><h2>Contributing</h2><p>The source is documented with JSDoc. To generate the documentation use:</p>
 <pre class="prettyprint source lang-bash"><code>npm run docs</code></pre><p>Extra debugging information is printed using the <code>debug</code> module:</p>
 <pre class="prettyprint source lang-bash"><code>DEBUG=binary-encoder:* npm t</code></pre><p>The documentation will be put in the new <code>docs</code> directory.</p>
 <p>To introduce an improvement please fork this project, commit changes in a new branch to your fork and add a pull request on this repository pointing at your fork. Please follow these style recommendations when working on the code:</p>
@@ -298,7 +244,7 @@ Fastest Test for N=10000000 is object</code></pre><h2>Contributing</h2><p>The so
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Nov 21 2018 17:37:39 GMT+0100 (Central European Standard Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Nov 22 2018 12:15:49 GMT+0100 (Central European Standard Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
