@@ -117,34 +117,34 @@ String | A UTF-8 encoded string. Equivalent to Data with some post processing. C
 The following benchmark results compare Protobuf to this implementation for some basic data structure and a long string of length at least N. `binary-encoder-buf` uses a preallocated buffer for all operations.
 
 ```
-protobuf x 264,940 ops/sec ±1.00% (92 runs sampled)
-binary-encoder x 23,463 ops/sec ±2.79% (90 runs sampled)
-binary-encoder-buf x 89,261 ops/sec ±1.18% (90 runs sampled)
-json x 258,351 ops/sec ±0.52% (94 runs sampled)
-Fastest Transcoding for N=10 is protobuf
+protobuf x 243,121 ops/sec ±3.58% (86 runs sampled)
+binary-encoder x 73,333 ops/sec ±2.17% (90 runs sampled)
+binary-encoder-buf x 159,013 ops/sec ±2.34% (89 runs sampled)
+json x 251,349 ops/sec ±1.19% (90 runs sampled)
+Fastest Transcoding for N=10 is json
 
-protobuf x 260,823 ops/sec ±1.04% (95 runs sampled)
-binary-encoder x 13,564 ops/sec ±1.70% (90 runs sampled)
-binary-encoder-buf x 69,481 ops/sec ±0.78% (96 runs sampled)
-json x 229,297 ops/sec ±1.27% (95 runs sampled)
+protobuf x 252,062 ops/sec ±2.13% (92 runs sampled)
+binary-encoder x 71,901 ops/sec ±2.26% (92 runs sampled)
+binary-encoder-buf x 158,841 ops/sec ±1.45% (93 runs sampled)
+json x 224,417 ops/sec ±1.52% (94 runs sampled)
 Fastest Transcoding for N=100 is protobuf
 
-protobuf x 207,682 ops/sec ±1.36% (89 runs sampled)
-binary-encoder x 1,615 ops/sec ±4.55% (76 runs sampled)
-binary-encoder-buf x 20,205 ops/sec ±0.86% (94 runs sampled)
-json x 126,046 ops/sec ±1.27% (94 runs sampled)
+protobuf x 197,825 ops/sec ±1.72% (84 runs sampled)
+binary-encoder x 65,152 ops/sec ±1.36% (90 runs sampled)
+binary-encoder-buf x 138,347 ops/sec ±1.97% (92 runs sampled)
+json x 119,051 ops/sec ±2.29% (89 runs sampled)
 Fastest Transcoding for N=1000 is protobuf
 
-protobuf x 76,755 ops/sec ±2.15% (80 runs sampled)
-binary-encoder x 57.94 ops/sec ±5.05% (61 runs sampled)
-binary-encoder-buf x 2,366 ops/sec ±0.98% (93 runs sampled)
-json x 23,853 ops/sec ±1.02% (95 runs sampled)
+protobuf x 67,883 ops/sec ±2.63% (74 runs sampled)
+binary-encoder x 30,369 ops/sec ±4.00% (84 runs sampled)
+binary-encoder-buf x 59,281 ops/sec ±1.37% (91 runs sampled)
+json x 23,988 ops/sec ±0.81% (94 runs sampled)
 Fastest Transcoding for N=10000 is protobuf
 
-protobuf x 11,710 ops/sec ±2.32% (88 runs sampled)
-binary-encoder x 0.71 ops/sec ±5.96% (6 runs sampled)
-binary-encoder-buf x 169 ops/sec ±2.72% (77 runs sampled)
-json x 2,651 ops/sec ±0.66% (95 runs sampled)
+protobuf x 11,065 ops/sec ±4.38% (81 runs sampled)
+binary-encoder x 6,191 ops/sec ±5.16% (84 runs sampled)
+binary-encoder-buf x 9,975 ops/sec ±2.12% (90 runs sampled)
+json x 2,642 ops/sec ±0.92% (95 runs sampled)
 Fastest Transcoding for N=100000 is protobuf
 ```
 
