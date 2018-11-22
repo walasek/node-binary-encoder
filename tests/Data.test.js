@@ -1,4 +1,4 @@
-const Data = require('../types/advanced/Data');
+const Data = require('../types/Data');
 
 module.exports = (t) => {
 	t.test('Data variable size', (t) => {

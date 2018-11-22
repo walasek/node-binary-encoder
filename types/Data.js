@@ -1,6 +1,6 @@
-const Exceptions = require('../../exceptions');
-const TranscodableType = require('../../Type');
-const Varint = require('../Varint');
+const Exceptions = require('../exceptions');
+const TranscodableType = require('../Type');
+const Varint = require('./Varint');
 
 /**
  * @class

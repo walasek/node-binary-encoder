@@ -1,4 +1,4 @@
-const Data = require('./Data');
+const Data = require('../Data');
 
 /**
  * @class
