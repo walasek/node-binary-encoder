@@ -29,7 +29,7 @@ class Optional extends TranscodableType {
 		}else{
 			result = this.oneof.encode({is_null: true}, buffer, offset);
 		}
-		this.last_bytes_encoded = result.length;
+		this.last_bytes_encoded = this.oneof.last_bytes_encoded;
 		return result;
 	}
 	decode(buffer, offset){
