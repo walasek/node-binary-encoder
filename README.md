@@ -93,9 +93,11 @@ const message = MyMessage.decode(buffer);
 Type | Usage | Size
 --- | --- | ---
 Uint8 | A byte of data (value range 0-255) | 1
+Uint16 | Two bytes of data (value range 0-(2^16-1)) | 2
+Int16 | Two bytes signed (value range -32768:32767) | 2
 Uint32 | Little-endian unsigned int (0-(2^32-1)) | 4
+Int32 | Found bytes signed (value range -2^16:2^16-1) | 4
 Varint | A Protobuf-style Varint, same value range as Uint32 | 1-5
-Implementing [U]Int* variants is trivial.
 
 ### Structures
 Type | Usage | Size

@@ -6,7 +6,10 @@ function factory(What){
 
 module.exports = {
 	Uint8: factory(require('./types/Uint8')),
+	Uint16: factory(require('./types/Uint16')),
+	Int16: factory(require('./types/Int16')),
 	Uint32: factory(require('./types/Uint32')),
+	Int32: factory(require('./types/Int32')),
 	Varint: factory(require('./types/Varint')),
 
 	Structure: factory(require('./types/Structure')),
