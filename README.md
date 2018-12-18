@@ -6,7 +6,7 @@ Quick and consistent binary encoding of data structures.
 
 ## Goal
 
-Encoding data in raw buffers is a difficult task especially in terms of description of the encoding end decoding process. This project aims to deliver tools for easy description of data structures that can be encoded into raw buffers, and decoded from raw buffers and data streams.
+Encoding data in raw buffers is a difficult task especially in terms of description of the encoding and decoding process. This project aims to deliver tools for easy description of data structures that can be encoded into raw buffers, and decoded from raw buffers and data streams.
 
 ## Installation
 
@@ -116,7 +116,7 @@ String | A UTF-8 encoded string. Equivalent to Data with some post processing. C
 
 ## Benchmarks
 
-The following benchmark results compare Protobuf to this implementation for some basic data structure and a long string of length at least N. `binary-encoder-buf` uses a preallocated buffer for all operations.
+The following benchmark compares Protobuf to this implementation for some basic data structure and a long string of length at least N. `binary-encoder-buf` uses a preallocated buffer for all operations.
 
 ```
 protobuf x 243,121 ops/sec ±3.58% (86 runs sampled)
