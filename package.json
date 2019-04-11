@@ -1,6 +1,6 @@
 {
   "name": "binary-encoder",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Fast and consistent binary encoding of data structures.",
   "engines": {
     "node": ">=8.9.0"
