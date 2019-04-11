@@ -22,9 +22,9 @@ class StringType extends Data {
 		return super.encode(as_buf, buffer, offset);
 	}
 	decode(buffer, offset){
-		const firstNull = buffer.indexOf(0);
+		const firstNull = buffer.indexOf(0, offset);
 		if(firstNull !== -1)
-			return super.decode(buffer.slice(0, firstNull), offset).toString('utf8');
+			return super.decode(buffer.slice(offset, firstNull), 0, true).toString('utf8');
 		return super.decode(buffer, offset).toString('utf8');
 	}
 }

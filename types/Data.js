@@ -50,12 +50,14 @@ class Data extends TranscodableType {
 			return result;
 		}
 	}
-	decode(buffer, offset){
+	decode(buffer, offset, ignore_size=false){
 		if(!offset)
 			offset = 0;
 		if(this.size){
+			if(!ignore_size && buffer.length-offset < this.size)
+				throw new Exceptions.InvalidDecodeBuffer('Declared data is not contained within the buffer (missing a part of stream?).');
 			const slice = buffer.slice(offset, this.size);
-			this.last_bytes_decoded = slice;
+			this.last_bytes_decoded = this.size;
 			return slice;
 		}else{
 			const size = this.Varint.decode(buffer, offset);
