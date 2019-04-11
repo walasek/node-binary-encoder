@@ -34,6 +34,12 @@ module.exports = (t) => {
 		t.equal(buf[2], 0);
 		t.throws(() => D.encode(Buffer.from('12345678943243243','ascii'), buf));
 		t.throws(() => DF.encode(Buffer.from([0,1,2,3]), buf, 4));
-
 	});
+	t.test('Data missing parts', (t) => {
+		t.throws(() => {
+			const D = new Data();
+			const raw = D.encode(Buffer.from('Some long data here'));
+			D.decode(raw.slice(0, raw.length/2 >>> 0));
+		});
+	})
 }
