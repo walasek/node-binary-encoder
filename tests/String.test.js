@@ -19,4 +19,20 @@ module.exports = (t) => {
 		const dec = D.decode(enc);
 		t.equal(dec.toString(), str);
 	});
+	t.test('Variable string size in fixed field', (t) => {
+		const str = 'hello!';
+
+		const D = new StringType(str.length*2); // Bigger than needed
+		const enc = D.encode(str);
+		t.equal(D.last_bytes_encoded, str.length*2);
+		const dec = D.decode(enc);
+		t.equal(dec.toString(), str);
+	});
+	t.test('Too long strings in a fixed size field throw', (t) => {
+		t.throws(() => {
+			const str = 'bigger than allowed';
+			const D = new StringType(str.length/2 >>> 0);
+			D.encode(str);
+		});
+	});
 }
