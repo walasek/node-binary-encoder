@@ -4,6 +4,8 @@ function factory(What){
 	}
 }
 
+const { compileDecoder, compileEncoder } = require('./Compiler');
+
 module.exports = {
 	Uint8: factory(require('./types/Uint8')),
 	Uint16: factory(require('./types/Uint16')),
@@ -20,4 +22,6 @@ module.exports = {
 	String: factory(require('./types/advanced/String')),
 	Constant: factory(require('./types/advanced/Constant')),
 	Optional: factory(require('./types/advanced/Optional')),
+
+	compileEncoder, compileDecoder
 };

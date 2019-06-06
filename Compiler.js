@@ -43,7 +43,6 @@ module.exports = {
 			return result;
 		}
 		`
-		console.log(code);
 		return eval(code);
 	}
 }

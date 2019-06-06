@@ -13,6 +13,7 @@
     <![endif]-->
     <link type="text/css" rel="stylesheet" href="styles/prettify.css">
     <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
@@ -24,7 +25,7 @@
 
 <label for="nav-trigger" class="overlay"></label>
 
-<nav>
+<nav >
     
     <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BufferMethodIntType.html">BufferMethodIntType</a><ul class='methods'><li data-type='method'><a href="BufferMethodIntType.html#decode">decode</a></li><li data-type='method'><a href="BufferMethodIntType.html#encode">encode</a></li></ul></li><li><a href="Constant.html">Constant</a><ul class='methods'><li data-type='method'><a href="Constant.html#decode">decode</a></li><li data-type='method'><a href="Constant.html#encode">encode</a></li></ul></li><li><a href="Data.html">Data</a><ul class='methods'><li data-type='method'><a href="Data.html#decode">decode</a></li><li data-type='method'><a href="Data.html#encode">encode</a></li></ul></li><li><a href="Int16.html">Int16</a><ul class='methods'><li data-type='method'><a href="Int16.html#decode">decode</a></li><li data-type='method'><a href="Int16.html#encode">encode</a></li></ul></li><li><a href="Int32.html">Int32</a><ul class='methods'><li data-type='method'><a href="Int32.html#decode">decode</a></li><li data-type='method'><a href="Int32.html#encode">encode</a></li></ul></li><li><a href="OneOf.html">OneOf</a><ul class='methods'><li data-type='method'><a href="OneOf.html#decode">decode</a></li><li data-type='method'><a href="OneOf.html#encode">encode</a></li></ul></li><li><a href="Optional.html">Optional</a><ul class='methods'><li data-type='method'><a href="Optional.html#decode">decode</a></li><li data-type='method'><a href="Optional.html#encode">encode</a></li></ul></li><li><a href="StringType.html">StringType</a><ul class='methods'><li data-type='method'><a href="StringType.html#decode">decode</a></li><li data-type='method'><a href="StringType.html#encode">encode</a></li></ul></li><li><a href="Structure.html">Structure</a><ul class='methods'><li data-type='method'><a href="Structure.html#decode">decode</a></li><li data-type='method'><a href="Structure.html#encode">encode</a></li></ul></li><li><a href="TranscodableArray.html">TranscodableArray</a><ul class='methods'><li data-type='method'><a href="TranscodableArray.html#decode">decode</a></li><li data-type='method'><a href="TranscodableArray.html#encode">encode</a></li></ul></li><li><a href="TranscodableType.html">TranscodableType</a><ul class='methods'><li data-type='method'><a href="TranscodableType.html#decode">decode</a></li><li data-type='method'><a href="TranscodableType.html#encode">encode</a></li></ul></li><li><a href="Uint8.html">Uint8</a><ul class='methods'><li data-type='method'><a href="Uint8.html#decode">decode</a></li><li data-type='method'><a href="Uint8.html#encode">encode</a></li></ul></li><li><a href="Uint16.html">Uint16</a><ul class='methods'><li data-type='method'><a href="Uint16.html#decode">decode</a></li><li data-type='method'><a href="Uint16.html#encode">encode</a></li></ul></li><li><a href="Uint32.html">Uint32</a><ul class='methods'><li data-type='method'><a href="Uint32.html#decode">decode</a></li><li data-type='method'><a href="Uint32.html#encode">encode</a></li></ul></li><li><a href="Varint.html">Varint</a><ul class='methods'><li data-type='method'><a href="Varint.html#decode">decode</a></li><li data-type='method'><a href="Varint.html#encode">encode</a></li></ul></li></ul>
 </nav>
@@ -42,6 +43,7 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>const Data = require('../Data');
+const Exceptions = require('../../exceptions');
 
 /**
  * @class
@@ -53,11 +55,42 @@
  */
 class StringType extends Data {
 	encode(object, buffer, offset){
-		return super.encode(Buffer.from(object, 'utf8'), buffer, offset);
+		let as_buf = Buffer.from(object, 'utf8');
+		if(this.size &amp;&amp; as_buf.length &lt; this.size){
+			// Pad with null bytes
+			as_buf = Buffer.concat([as_buf, Buffer.alloc(this.size-as_buf.length, 0)]);
+		}
+		if(this.size &amp;&amp; as_buf.length > this.size){
+			throw new Exceptions.InvalidEncodeValue('Encoded string is too big to fit in '+this.size+' bytes.');
+		}
+		return super.encode(as_buf, buffer, offset);
 	}
 	decode(buffer, offset){
-		const result = super.decode(buffer, offset);
-		return result.toString('utf8');
+		const firstNull = buffer.indexOf(0, offset);
+		if(firstNull !== -1)
+			return super.decode(buffer.slice(offset, firstNull), 0, true).toString('utf8');
+		return super.decode(buffer, offset).toString('utf8');
+	}
+	compiledEncoder(source_var){
+		return `
+		tmp = Buffer.from(${source_var}, 'utf8');
+		${this.size ? `if(tmp.length &lt; ${this.size})
+			tmp = Buffer.concat([tmp, Buffer.alloc(${this.size}-tmp.length, 0)]);
+		if(tmp.length > ${this.size})
+			throw new Exceptions.InvalidEncodeValue('Encoded string is too long to fit in ${this.size} bytes.')` : ''}
+		${super.compiledEncoder('tmp')}
+		`
+	}
+	compiledDecoder(target_var){
+		return `
+		${super.compiledDecoder('tmp')}
+		tmp2 = tmp.indexOf(0);
+		if(tmp2 !== -1){
+			${target_var} = tmp.slice(0, tmp2).toString('utf8');
+		}else{
+			${target_var} = tmp.toString('utf8');
+		}
+		`
 	}
 }
 
@@ -75,11 +108,13 @@ module.exports = StringType;</code></pre>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue Dec 18 2018 11:37:53 GMT+0100 (Central European Standard Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.2</a> on Thu Jun 06 2019 14:58:25 GMT+0200 (Central European Summer Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
 <script src="scripts/linenumber.js"></script>
+
 
 
 </body>

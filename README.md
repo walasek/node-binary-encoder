@@ -85,6 +85,20 @@ const buffer = MyMessage.encode(my_message);
 // socket.on('data', ...); fs.readFilesync(...); or something else here
 const message = MyMessage.decode(buffer);
 // t.deepEqual(message, my_message, 'This would pass');
+
+// EXPERIMENTAL API
+// The following functions will be removed in the future.
+// Generate a more efficient function to encode/decode.
+const encoder = bin.compileEncoder(MyMessage);
+const decoder = bin.compileEncoder(MyMessage);
+
+// This is approximately 100% faster than recursive functions, but experimental at this time.
+// For the maximum speed use a temporary buffer (allocated once)
+const tmp = Buffer.alloc(1024);
+encoder(my_message, tmp);
+// ...
+message = decoder(tmp);
+message = MyMessage.decode(tmp); // Backwards compatible
 ```
 
 ## API
@@ -116,38 +130,118 @@ String | A UTF-8 encoded string. Equivalent to Data with some post processing. C
 
 ## Benchmarks
 
-The following benchmark compares Protobuf to this implementation for some basic data structure and a long string of length at least N. `binary-encoder-buf` uses a preallocated buffer for all operations.
+The following benchmark compares Protobuf to this implementation for some basic data structure and a long string of length at least N. `binary-encoder-buf` uses a preallocated buffer for all operations. `binary-encoder-compiled` uses an experimental API that generates a structural function (rather than recursive) that is much more efficient.
 
 ```
-protobuf x 243,121 ops/sec ±3.58% (86 runs sampled)
-binary-encoder x 73,333 ops/sec ±2.17% (90 runs sampled)
-binary-encoder-buf x 159,013 ops/sec ±2.34% (89 runs sampled)
-json x 251,349 ops/sec ±1.19% (90 runs sampled)
-Fastest Transcoding for N=10 is json
+protobuf (encode) x 263,847 ops/sec ±2.28% (85 runs sampled)
+binary-encoder (encode) x 64,397 ops/sec ±3.27% (77 runs sampled)
+binary-encoder-buf (encode) x 166,912 ops/sec ±2.63% (80 runs sampled)
+binary-encoder-compiled (encode) x 252,473 ops/sec ±2.53% (83 runs sampled)
+binary-encoder-compiled-buf (encode) x 368,113 ops/sec ±2.07% (85 runs sampled)
+json (encode) x 304,341 ops/sec ±2.20% (88 runs sampled)
+Fastest Encoding for N=10 is binary-encoder-compiled-buf (encode)
 
-protobuf x 252,062 ops/sec ±2.13% (92 runs sampled)
-binary-encoder x 71,901 ops/sec ±2.26% (92 runs sampled)
-binary-encoder-buf x 158,841 ops/sec ±1.45% (93 runs sampled)
-json x 224,417 ops/sec ±1.52% (94 runs sampled)
-Fastest Transcoding for N=100 is protobuf
+protobuf (decode) x 888,844 ops/sec ±2.16% (81 runs sampled)
+binary-encoder (decode) x 305,803 ops/sec ±2.70% (76 runs sampled)
+binary-encoder-compiled (decode) x 570,504 ops/sec ±1.87% (88 runs sampled)
+json (decode) x 1,087,999 ops/sec ±2.08% (87 runs sampled)
+Fastest Decoding for N=10 is json (decode)
 
-protobuf x 197,825 ops/sec ±1.72% (84 runs sampled)
-binary-encoder x 65,152 ops/sec ±1.36% (90 runs sampled)
-binary-encoder-buf x 138,347 ops/sec ±1.97% (92 runs sampled)
-json x 119,051 ops/sec ±2.29% (89 runs sampled)
-Fastest Transcoding for N=1000 is protobuf
+Message sizes:
+protobuf 102 bytes
+binary-encoder 95
+json 265
 
-protobuf x 67,883 ops/sec ±2.63% (74 runs sampled)
-binary-encoder x 30,369 ops/sec ±4.00% (84 runs sampled)
-binary-encoder-buf x 59,281 ops/sec ±1.37% (91 runs sampled)
-json x 23,988 ops/sec ±0.81% (94 runs sampled)
-Fastest Transcoding for N=10000 is protobuf
+protobuf (encode) x 248,611 ops/sec ±2.20% (84 runs sampled)
+binary-encoder (encode) x 69,762 ops/sec ±1.77% (84 runs sampled)
+binary-encoder-buf (encode) x 171,689 ops/sec ±3.98% (81 runs sampled)
+binary-encoder-compiled (encode) x 224,163 ops/sec ±3.91% (75 runs sampled)
+binary-encoder-compiled-buf (encode) x 332,148 ops/sec ±3.53% (79 runs sampled)
+json (encode) x 125,643 ops/sec ±2.27% (83 runs sampled)
+Fastest Encoding for N=100 is binary-encoder-compiled-buf (encode)
 
-protobuf x 11,065 ops/sec ±4.38% (81 runs sampled)
-binary-encoder x 6,191 ops/sec ±5.16% (84 runs sampled)
-binary-encoder-buf x 9,975 ops/sec ±2.12% (90 runs sampled)
-json x 2,642 ops/sec ±0.92% (95 runs sampled)
-Fastest Transcoding for N=100000 is protobuf
+protobuf (decode) x 849,158 ops/sec ±3.50% (83 runs sampled)
+binary-encoder (decode) x 309,057 ops/sec ±2.86% (78 runs sampled)
+binary-encoder-compiled (decode) x 481,219 ops/sec ±4.96% (74 runs sampled)
+json (decode) x 631,153 ops/sec ±1.97% (87 runs sampled)
+Fastest Decoding for N=100 is protobuf (decode)
+
+Message sizes:
+protobuf 190 bytes
+binary-encoder 183
+json 529
+
+protobuf (encode) x 218,729 ops/sec ±3.15% (78 runs sampled)
+binary-encoder (encode) x 64,804 ops/sec ±2.43% (85 runs sampled)
+binary-encoder-buf (encode) x 173,645 ops/sec ±2.57% (82 runs sampled)
+binary-encoder-compiled (encode) x 218,610 ops/sec ±3.87% (73 runs sampled)
+binary-encoder-compiled-buf (encode) x 357,404 ops/sec ±2.50% (84 runs sampled)
+json (encode) x 18,060 ops/sec ±2.86% (85 runs sampled)
+Fastest Encoding for N=1000 is binary-encoder-compiled-buf (encode)
+
+protobuf (decode) x 907,313 ops/sec ±1.46% (89 runs sampled)
+binary-encoder (decode) x 339,065 ops/sec ±1.98% (86 runs sampled)
+binary-encoder-compiled (decode) x 580,952 ops/sec ±1.68% (86 runs sampled)
+json (decode) x 138,365 ops/sec ±1.58% (90 runs sampled)
+Fastest Decoding for N=1000 is protobuf (decode)
+
+Message sizes:
+protobuf 1091 bytes
+binary-encoder 1084
+json 3229
+
+protobuf (encode) x 143,791 ops/sec ±4.72% (76 runs sampled)
+binary-encoder (encode) x 44,473 ops/sec ±3.73% (81 runs sampled)
+binary-encoder-buf (encode) x 162,560 ops/sec ±2.35% (82 runs sampled)
+binary-encoder-compiled (encode) x 82,039 ops/sec ±6.18% (65 runs sampled)
+binary-encoder-compiled-buf (encode) x 289,004 ops/sec ±3.98% (81 runs sampled)
+json (encode) x 1,675 ops/sec ±5.04% (77 runs sampled)
+Fastest Encoding for N=10000 is binary-encoder-compiled-buf (encode)
+
+protobuf (decode) x 848,061 ops/sec ±3.28% (82 runs sampled)
+binary-encoder (decode) x 338,013 ops/sec ±1.77% (84 runs sampled)
+binary-encoder-compiled (decode) x 563,351 ops/sec ±2.63% (84 runs sampled)
+json (decode) x 16,073 ops/sec ±0.91% (93 runs sampled)
+Fastest Decoding for N=10000 is protobuf (decode)
+
+Message sizes:
+protobuf 10091 bytes
+binary-encoder 10084
+json 30229
+
+protobuf (encode) x 35,712 ops/sec ±8.44% (72 runs sampled)
+binary-encoder (encode) x 11,461 ops/sec ±6.95% (75 runs sampled)
+binary-encoder-buf (encode) x 99,910 ops/sec ±1.93% (87 runs sampled)
+binary-encoder-compiled (encode) x 15,237 ops/sec ±5.31% (82 runs sampled)
+binary-encoder-compiled-buf (encode) x 149,437 ops/sec ±1.35% (90 runs sampled)
+json (encode) x 171 ops/sec ±3.47% (72 runs sampled)
+Fastest Encoding for N=100000 is binary-encoder-compiled-buf (encode)
+
+protobuf (decode) x 842,279 ops/sec ±2.77% (82 runs sampled)
+binary-encoder (decode) x 316,650 ops/sec ±2.88% (81 runs sampled)
+binary-encoder-compiled (decode) x 591,702 ops/sec ±1.93% (85 runs sampled)
+json (decode) x 1,632 ops/sec ±0.68% (91 runs sampled)
+Fastest Decoding for N=100000 is protobuf (decode)
+
+Message sizes:
+protobuf 100092 bytes
+binary-encoder 100085
+json 300229
+
+Results in CSV for plots:
+,protobuf (encode),binary-encoder (encode),binary-encoder-buf (encode),binary-encoder-compiled (encode),binary-encoder-compiled-buf (encode),json (encode)
+10,263846.9073576735,64396.66812325595,166912.4244514077,252472.81891420262,368113.2204249347,304340.9733025798
+100,248611.2680726218,69761.85906312823,171688.58036597492,224162.88279805557,332147.5526819311,125643.16435198345
+1000,218729.48935518216,64804.45415508803,173644.57690728805,218610.08661295244,357403.71497006307,18059.71502669489
+10000,143790.94828889717,44472.53288733788,162559.73559819476,82039.03267299477,289004.0518322682,1674.9432137929612
+100000,35712.408241261044,11461.013689383273,99909.66569366025,15236.606656340335,149436.75087655275,170.69591493006303
+
+,protobuf (decode),binary-encoder (decode),binary-encoder-compiled (decode),json (decode)
+10,888843.5927172618,305803.3415753891,570503.5158795862,1087998.6920098183
+100,849158.20272219,309056.5345350961,481219.4509456205,631152.9125705716
+1000,907313.1785145177,339065.13895150385,580952.110157544,138365.14403254417
+10000,848061.1820993097,338013.1009018717,563350.7465400948,16073.098278377967
+100000,842279.1236521575,316650.2037582322,591702.3236950247,1632.3852198601567
 ```
 
 ## Contributing
