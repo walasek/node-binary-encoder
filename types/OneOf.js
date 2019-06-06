@@ -82,6 +82,24 @@ class OneOf extends TranscodableType {
 		}
 		`
 	}
+	compiledDecoder(target_var){
+		return `
+		${this.Varint.compiledDecoder('tmp')}
+		${target_var} = {};
+		const _x = tmp;
+		switch(_x){
+			${Object.keys(this.descriptor).map(desc => {
+				return `
+				case ${this.id_map[desc]}:
+					${this.descriptor[desc].compiledDecoder(`${target_var}.${desc}`)}
+				break;
+				`
+			}).join('')}
+			default:
+				throw new Exceptions.InvalidDecodeBuffer('Unknown OneOf id '+tmp);
+		}
+		`
+	}
 }
 
 module.exports = OneOf;

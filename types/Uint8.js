@@ -13,10 +13,12 @@ class Uint8 extends BufferMethodIntType {
 		super(buf.writeUInt8, buf.readUInt8, 1);
 	}
 	compiledEncoder(source_var){
-		return `
-		buffer.writeUInt8(${source_var}, position);
-		position += 1;
-		`
+		return `buffer.writeUInt8(${source_var}, position);
+		position += 1;`
+	}
+	compiledDecoder(target_var){
+		return `${target_var} = buffer.readUInt8(position);
+		position += 1;`;
 	}
 }
 

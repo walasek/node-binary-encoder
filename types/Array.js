@@ -71,12 +71,22 @@ class TranscodableArray extends TranscodableType {
 		return result;
 	}
 	compiledEncoder(source_var){
-		return `
-		${this.fixed_length ? `if(source.length !== ${this.fixed_length})
+		return `${this.fixed_length ? `if(source.length !== ${this.fixed_length})
 			throw new Exceptions.MissingFields('Array does not match the fixed length of ${this.fixed_length}')`
 			: `${this.Varint.compiledEncoder(`${source_var}.length`)}`}
 		for(let value of ${source_var}){
 			${this.type.compiledEncoder('value')}
+		}`
+	}
+	compiledDecoder(target_var){
+		return `
+		${!this.fixed_length ? `
+		${this.Varint.compiledDecoder('tmp')}
+		const _x = tmp;
+		` : ''}
+		${target_var} = [];
+		for(let i = 0; i < ${this.fixed_length || '_x'}; i++){
+			${this.type.compiledDecoder(`${target_var}[i]`)}
 		}
 		`
 	}

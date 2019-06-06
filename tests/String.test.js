@@ -35,4 +35,10 @@ module.exports = (t) => {
 			D.encode(str);
 		});
 	});
+	t.test('Unicode strings in fixed lengths', (t) => {
+		t.throws(() => {
+			const D = new StringType(1);
+			D.encode('Ą');
+		});
+	});
 }

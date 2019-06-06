@@ -28,6 +28,20 @@ class Constant extends Uint8 {
 			throw new Exceptions.InvalidDecodeBuffer('Invalid constant decoded, expected '+this.value);
 		return value;
 	}
+	compiledEncoder(source_var){
+		return `
+		if(${source_var} !== ${this.value})
+			throw new Exceptions.InvalidEncodeValue('Expected a constant of ${this.value}');
+		${super.compiledEncoder(source_var)};
+		`;
+	}
+	compiledDecoder(target_var){
+		return `
+		${super.compiledDecoder(target_var)}
+		if(${target_var} !== ${this.value})
+			throw new Exceptions.InvalidDecodeBuffer('Invalid constant decoded, expected ${this.value}');
+		`
+	}
 }
 
 module.exports = Constant;

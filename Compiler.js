@@ -20,10 +20,19 @@ module.exports = {
 			return buffer;
 		}
 		`
-		console.log(code);
 		return eval(code);
 	},
 	compileDecoder(structure){
-
+		const code = `
+		(buffer) => {
+			let result;
+			let position = 0;
+			let tmp, tmp2;
+			${structure.compiledDecoder('result')}
+			return result;
+		}
+		`
+		console.log(code);
+		return eval(code);
 	}
 }

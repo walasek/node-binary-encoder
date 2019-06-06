@@ -10,6 +10,12 @@ class NullType extends TranscodableType {
 		this.last_bytes_decoded = 0;
 		return null;
 	}
+	compiledEncoder(){
+		return '';
+	}
+	compiledDecoder(){
+		return '';
+	}
 }
 
 module.exports = NullType;

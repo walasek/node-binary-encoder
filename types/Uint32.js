@@ -13,10 +13,12 @@ class Uint32 extends BufferMethodIntType {
 		super(buf.writeUInt32LE, buf.readUInt32LE, 4);
 	}
 	compiledEncoder(source_var){
-		return `
-		buffer.writeUInt32LE(${source_var}, position);
-		position += 4;
-		`
+		return `buffer.writeUInt32LE(${source_var}, position);
+		position += 4;`
+	}
+	compiledDecoder(target_var){
+		return `${target_var} = buffer.readUInt32LE(position);
+		position += 4;`;
 	}
 }
 

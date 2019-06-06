@@ -33,10 +33,12 @@ class Varint extends TranscodableType {
 		}
 	}
 	compiledEncoder(source_var){
-		return `
-		varint.encode(${source_var}, buffer, position);
-		position += varint.encode.bytes;
-		`;
+		return `varint.encode(${source_var}, buffer, position);
+		position += varint.encode.bytes;`;
+	}
+	compiledDecoder(target_var){
+		return `${target_var} = varint.decode(buffer, position);
+		position += varint.decode.bytes;`
 	}
 }
 

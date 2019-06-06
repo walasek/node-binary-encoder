@@ -37,6 +37,17 @@ class StringType extends Data {
 		${super.compiledEncoder('tmp')}
 		`
 	}
+	compiledDecoder(target_var){
+		return `
+		${super.compiledDecoder('tmp')}
+		tmp2 = tmp.indexOf(0);
+		if(tmp2 !== -1){
+			${target_var} = tmp.slice(0, tmp2).toString('utf8');
+		}else{
+			${target_var} = tmp.toString('utf8');
+		}
+		`
+	}
 }
 
 module.exports = StringType;

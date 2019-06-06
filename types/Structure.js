@@ -65,8 +65,18 @@ class Structure extends TranscodableType {
 		}).join('')}
 		`
 	}
-	compiledDecoder(){
+	compiledDecoder(target_var){
 		return `
+		${target_var} = {};
+		${this.fields.map((field) => {
+			try {
+				if(!(this.descriptor[field] instanceof TranscodableType))
+					throw new Exceptions.InvalidDescriptor('Bad descriptor for field '+field);
+				return `${this.descriptor[field].compiledDecoder(`${target_var}.${field}`)}`;
+			}catch(err){
+				throw new Error('Exceptions occured when compiling decoder for '+field+'\n'+err);
+			}
+		}).join('')}
 		`
 	}
 }

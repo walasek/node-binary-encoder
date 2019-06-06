@@ -37,6 +37,23 @@ class Optional extends TranscodableType {
 		this.last_bytes_decoded = this.oneof.last_bytes_decoded;
 		return obj.is_set || null;
 	}
+	compiledEncoder(source_var){
+		return `
+		tmp = {};
+		if(${source_var}){
+			tmp.is_set = ${source_var};
+		}else{
+			tmp.is_null = true;
+		}
+		${this.oneof.compiledEncoder('tmp')}
+		`;
+	}
+	compiledDecoder(target_var){
+		return `
+		${this.oneof.compiledDecoder('tmp')};
+		${target_var} = tmp.is_set || null;
+		`
+	}
 }
 
 module.exports = Optional;

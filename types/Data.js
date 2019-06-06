@@ -81,10 +81,18 @@ class Data extends TranscodableType {
 			:
 			// Variable size
 			`${this.Varint.compiledEncoder(`${source_var}.length`)}`)+
-		`if(buffer.length-position < ${source_var}.length)
+		`
+		if(buffer.length-position < ${source_var}.length)
 			throw new Exceptions.BufferTooSmall('Could not encode data using the buffer provided.');
 		${source_var}.copy(buffer, position);
 		position += ${source_var}.length;`
+	}
+	compiledDecoder(target_var){
+		return `
+		${!this.size ? this.Varint.compiledDecoder('tmp') : ''}
+		${target_var} = buffer.slice(position, position+${this.size ? this.size : 'tmp'})
+		position += ${this.size || 'tmp.length'};
+		`
 	}
 }
 

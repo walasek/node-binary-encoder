@@ -4,7 +4,8 @@ const struct = require('./benchmark/rules');
 
 module.exports = (t) => {
 	t.test('Compiler tests', (t) => {
-		const encode = compileEncoder(struct);
+		const encode = compileEncoder(struct, 2048);
+		const decode = compileDecoder(struct);
 		const original = {
 			title: 'binary-encoder',
 			from: {first_name: 'Karol', age: 25},
@@ -20,6 +21,17 @@ module.exports = (t) => {
 
 		t.test('Data encoded by compiled function can be decoded normally', (t) => {
 			const decoded = struct.decode(result);
+			t.equal(JSON.stringify(original), JSON.stringify(decoded));
+		});
+
+		t.test('Data encoded by compiled function can be decoded by a compiled function', (t) => {
+			const decoded = decode(result);
+			t.equal(JSON.stringify(original), JSON.stringify(decoded));
+		});
+
+		t.test('Data encoded by recursive functions can be decoded by a compiled function', (t) => {
+			const encoded = struct.encode(original);
+			const decoded = decode(encoded);
 			t.equal(JSON.stringify(original), JSON.stringify(decoded));
 		});
 	});
