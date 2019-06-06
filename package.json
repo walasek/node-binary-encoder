@@ -7,7 +7,7 @@
   },
   "main": "index.js",
   "scripts": {
-    "coverage": "istanbul cover test.js",
+    "coverage": "nyc --reporter=lcov --reporter=text-summary npm run test",
     "test": "node test.js | node node_modules/faucet/bin/cmd",
     "docs": "node node_modules/jsdoc/jsdoc.js -c jsdoc.json",
     "benchmark": "node benchmark.js"
@@ -32,8 +32,8 @@
     "docdash": "^1.1.1",
     "faucet": "0.0.1",
     "glob": "^7.1.4",
-    "istanbul": "^0.4.5",
     "jsdoc": "^3.6.2",
+    "nyc": "^14.1.1",
     "protocol-buffers": "^4.1.0",
     "zora": "^2.0.1"
   },
