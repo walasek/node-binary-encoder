@@ -14,11 +14,11 @@ class Int32 extends BufferMethodIntType {
 	}
 	compiledEncoder(source_var){
 		return `buffer.writeInt32LE(${source_var}, position);
-		position += 2;`
+		position += 4;`
 	}
 	compiledDecoder(target_var){
 		return `${target_var} = buffer.readInt32LE(position);
-		position += 2;`;
+		position += 4;`;
 	}
 }
 

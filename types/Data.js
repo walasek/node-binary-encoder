@@ -76,8 +76,7 @@ class Data extends TranscodableType {
 		`+(this.size ?
 			// Fixed size
 			`if(${source_var}.length !== ${this.size})
-				throw new Exceptions.InvalidEncodeValue('Expected a Buffer');
-			position += ${this.size};`
+				throw new Exceptions.InvalidEncodeValue('Expected a Buffer');`
 			:
 			// Variable size
 			`${this.Varint.compiledEncoder(`${source_var}.length`)}`)+

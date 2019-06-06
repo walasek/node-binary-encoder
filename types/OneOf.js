@@ -85,8 +85,8 @@ class OneOf extends TranscodableType {
 	compiledDecoder(target_var){
 		return `
 		${this.Varint.compiledDecoder('tmp')}
-		${target_var} = {};
 		const _x = tmp;
+		${target_var} = {};
 		switch(_x){
 			${Object.keys(this.descriptor).map(desc => {
 				return `

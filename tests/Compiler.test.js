@@ -10,7 +10,7 @@ module.exports = (t) => {
 			title: 'binary-encoder',
 			from: {first_name: 'Karol', age: 25},
 			to: {first_name: 'Jon', age: 30},
-			content: 'some content'.padEnd(1024, '0'),
+			content: Buffer.from('some content'.padEnd(1024, '0')),
 			attachments: [
 				{link: {url: 'https://github.com/walasek/node-binary-encoder'}}
 			]

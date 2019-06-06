@@ -130,7 +130,8 @@ module.exports = (t) => {
 			A: lib.Uint32(),
 			B: 'not a valid descriptor'
 		});
-
+		t.throws(() => lib.compileEncoder(bad));
+		t.throws(() => lib.compileDecoder(bad));
 		t.throws(() => bad.encode({A:1,B:2}));
 	});
 

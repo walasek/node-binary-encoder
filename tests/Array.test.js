@@ -4,6 +4,10 @@ module.exports = (t) => {
 	t.test('Basic fixed arrays', (t) => {
 		const A1 = lib.Array(lib.Uint32(), 1);
 		const A2 = lib.Array(lib.Uint32(), 2);
+		const a1encoder = lib.compileEncoder(A1);
+		const a1decoder = lib.compileDecoder(A1);
+		const a2encoder = lib.compileEncoder(A2);
+		const a2decoder = lib.compileDecoder(A2);
 
 		const v1 = [1];
 		const v2 = [1,2];
@@ -14,6 +18,8 @@ module.exports = (t) => {
 		t.equal(A2.last_bytes_encoded, 8);
 		t.throws(() => A1.encode(v2));
 		t.throws(() => A2.encode(v1));
+		t.throws(() => a1encoder(A2));
+		t.throws(() => a2encoder(A1));
 
 		const dec1 = A1.decode(enc1);
 		const dec2 = A2.decode(enc2);
@@ -54,6 +60,17 @@ module.exports = (t) => {
 		t.equal(buf[1], 1);
 		const dec3 = A.decode(enc3, 0);
 		t.equal(dec3[0], 1);
+
+		const encoder = lib.compileEncoder(A);
+		const decoder = lib.compileDecoder(A);
+		const enc4 = encoder(v1);
+		const enc5 = encoder(v2);
+		t.ok(Buffer.compare(enc4, enc1) == 0);
+		const dec4 = decoder(enc4);
+		const dec5 = decoder(enc5);
+		t.equal(dec4[0], 1);
+		t.equal(dec5[0], 1);
+		t.equal(dec5[1], 2);
 	});
 
 	t.test('Array of varint', (t) => {
