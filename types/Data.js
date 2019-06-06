@@ -91,7 +91,7 @@ class Data extends TranscodableType {
 		return `
 		${!this.size ? this.Varint.compiledDecoder('tmp') : ''}
 		${target_var} = buffer.slice(position, position+${this.size ? this.size : 'tmp'})
-		position += ${this.size || 'tmp.length'};
+		position += ${this.size || `${target_var}.length`};
 		`
 	}
 }

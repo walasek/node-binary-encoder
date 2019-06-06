@@ -24,7 +24,7 @@ const MyMessage = bin.Structure({
     title: bin.String(),
     from: Person,
     to: Person,
-    content: bin.String(),
+    content: bin.Data(),
     attachments: bin.Array(Attachment),
 });
 
