@@ -56,9 +56,9 @@ module.exports = (t) => {
 		t.equal(A.last_bytes_decoded, 9);
 
 		const buf = Buffer.allocUnsafe(16);
-		const enc3 = A.encode(v1, buf, 0);
-		t.equal(buf[1], 1);
-		const dec3 = A.decode(enc3, 0);
+		const enc3 = A.encode(v1, buf, 1);
+		t.equal(buf[2], 1);
+		const dec3 = A.decode(enc3, 1);
 		t.equal(dec3[0], 1);
 
 		const encoder = lib.compileEncoder(A);
