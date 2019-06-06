@@ -27,6 +27,16 @@ class StringType extends Data {
 			return super.decode(buffer.slice(offset, firstNull), 0, true).toString('utf8');
 		return super.decode(buffer, offset).toString('utf8');
 	}
+	compiledEncoder(source_var){
+		return `
+		tmp = Buffer.from(${source_var}, 'utf8');
+		${this.size ? `if(tmp.length < ${this.size})
+			tmp = Buffer.concat([tmp, Buffer.alloc(${this.size}-tmp.length, 0)]);
+		if(tmp.length > ${this.size})
+			throw new Exceptions.InvalidEncodeValue('Encoded string is too long to fit in ${this.size} bytes.')` : ''}
+		${super.compiledEncoder('tmp')}
+		`
+	}
 }
 
 module.exports = StringType;

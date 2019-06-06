@@ -32,6 +32,12 @@ class Varint extends TranscodableType {
 			throw new Exceptions.InvalidDecodeBuffer('Could not decode Varint buffer');
 		}
 	}
+	compiledEncoder(source_var){
+		return `
+		varint.encode(${source_var}, buffer, position);
+		position += varint.encode.bytes;
+		`;
+	}
 }
 
 module.exports = Varint;

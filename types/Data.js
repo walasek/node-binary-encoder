@@ -69,6 +69,23 @@ class Data extends TranscodableType {
 			return slice;
 		}
 	}
+	compiledEncoder(source_var){
+		return `
+		if(!(${source_var} instanceof Buffer))
+			throw new Exceptions.InvalidEncodeValue('Expected a Buffer');
+		`+(this.size ?
+			// Fixed size
+			`if(${source_var}.length !== ${this.size})
+				throw new Exceptions.InvalidEncodeValue('Expected a Buffer');
+			position += ${this.size};`
+			:
+			// Variable size
+			`${this.Varint.compiledEncoder(`${source_var}.length`)}`)+
+		`if(buffer.length-position < ${source_var}.length)
+			throw new Exceptions.BufferTooSmall('Could not encode data using the buffer provided.');
+		${source_var}.copy(buffer, position);
+		position += ${source_var}.length;`
+	}
 }
 
 module.exports = Data;

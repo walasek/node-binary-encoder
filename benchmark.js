@@ -5,6 +5,7 @@ const fs = require('fs');
 const proto_source = fs.readFileSync('./tests/benchmark/protobuf.proto');
 const defs = protobuf(proto_source);
 const MyMessage = require('./tests/benchmark/rules');
+const Compiler = require('./Compiler');
 
 function runTestsForN(n){
 	const original = {
@@ -17,6 +18,7 @@ function runTestsForN(n){
 		]
 	};
 	const buf = Buffer.allocUnsafe(2*n+1024);
+	const turboEncoder = Compiler.compileEncoder(MyMessage, buf.length);
 
 	new Benchmark.Suite('Encode')
 	.add('protobuf', () => {
@@ -33,6 +35,20 @@ function runTestsForN(n){
 	})
 	.add('binary-encoder-buf', () => {
 		const r = MyMessage.encode(original, buf);
+		const obj = MyMessage.decode(r);
+		if(!obj.attachments[0].link.url)
+			throw Error('nope');
+	})
+	.add('binary-encoder-compiled', () => {
+		const r = turboEncoder(original);
+		// TODO: Swap this later
+		const obj = MyMessage.decode(r);
+		if(!obj.attachments[0].link.url)
+			throw Error('nope');
+	})
+	.add('binary-encoder-compiled-buf', () => {
+		const r = turboEncoder(original, buf);
+		// TODO: Swap this later
 		const obj = MyMessage.decode(r);
 		if(!obj.attachments[0].link.url)
 			throw Error('nope');

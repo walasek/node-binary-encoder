@@ -52,6 +52,23 @@ class Structure extends TranscodableType {
 		this.last_bytes_decoded = local_offset;
 		return obj;
 	}
+	compiledEncoder(source_var){
+		return `
+		${this.fields.map(field => {
+			try {
+				if(!(this.descriptor[field] instanceof TranscodableType))
+					throw new Exceptions.InvalidDescriptor('Bad descriptor for field '+field);
+				return `${this.descriptor[field].compiledEncoder(`${source_var}.${field}`)}`;
+			}catch(err){
+				throw new Error('Exceptions occured when compiling encoder for '+field+'\n'+err);
+			}
+		}).join('')}
+		`
+	}
+	compiledDecoder(){
+		return `
+		`
+	}
 }
 
 module.exports = Structure;

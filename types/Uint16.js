@@ -12,6 +12,12 @@ class Uint16 extends BufferMethodIntType {
 		const buf = Buffer.from([]);
 		super(buf.writeUInt16LE, buf.readUInt16LE, 2);
 	}
+	compiledEncoder(source_var){
+		return `
+		buffer.writeUInt16LE(${source_var}, position);
+		position += 2;
+		`
+	}
 }
 
 module.exports = Uint16;

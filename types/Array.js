@@ -70,6 +70,16 @@ class TranscodableArray extends TranscodableType {
 		this.last_bytes_decoded = local_offset;
 		return result;
 	}
+	compiledEncoder(source_var){
+		return `
+		${this.fixed_length ? `if(source.length !== ${this.fixed_length})
+			throw new Exceptions.MissingFields('Array does not match the fixed length of ${this.fixed_length}')`
+			: `${this.Varint.compiledEncoder(`${source_var}.length`)}`}
+		for(let value of ${source_var}){
+			${this.type.compiledEncoder('value')}
+		}
+		`
+	}
 }
 
 module.exports = TranscodableArray;

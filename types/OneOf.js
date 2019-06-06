@@ -62,6 +62,26 @@ class OneOf extends TranscodableType {
 		this.last_bytes_decoded = local_offset;
 		return {[this.rev_map[id]]: result};
 	}
+	compiledEncoder(source_var){
+		return `
+		const keys = Object.keys(${source_var});
+		if(keys.length > 1)
+			throw new Exceptions.AmbiguousObject('OneOf fields only allow a single key, provided '+keys.length);
+		const key = keys[0];
+		switch(key){
+			${Object.keys(this.descriptor).map(desc => {
+				return `
+				case '${desc}':
+					${this.Varint.compiledEncoder(this.id_map[desc])}
+					${this.descriptor[desc].compiledEncoder(`${source_var}.${desc}`)}
+				break;
+				`
+			}).join('')}
+			default:
+				throw new Exceptions.InvalidEncodeValue('Unknown OneOf key'+key);
+		}
+		`
+	}
 }
 
 module.exports = OneOf;
