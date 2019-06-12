@@ -36,6 +36,8 @@ npm run benchmark
 
 Beware this project is still in development. There may be serious bugs or performance issues over time.
 
+Breaking changes might be introduced in minor versions until version 1.0 comes out.
+
 Documentation is available [here](https://walasek.github.io/node-binary-encoder/).
 
 ```javascript
