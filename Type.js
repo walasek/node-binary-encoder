@@ -14,12 +14,13 @@ class TranscodableType {
 	 * @param {*} object The object/value to be encoded.
 	 * @param {Buffer} [buffer] The buffer to write to. If the buffer is too small an exception will be thrown.
 	 * @param {Number} [offset] The offset in buffer to write at.
+	 * @param {Number} [non_alloc_size] If _buffer_ is not passed then allocate a buffer of this size.
 	 * @returns {Buffer} The buffer that contains the encoded data. If a new buffer is allocated then the data was written from the begining.
 	 */
-	encode(object, buffer, offset){
+	encode(object, buffer, offset, non_alloc_size=null){
 		if(!this._tmp_encoder_compiled)
 			this._tmp_encoder_compiled = compileEncoder(this);
-		return this._tmp_encoder_compiled(object, buffer, offset);
+		return this._tmp_encoder_compiled(object, buffer, offset, non_alloc_size);
 	}
 	/**
 	 * Decode an object from a binary representation.

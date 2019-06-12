@@ -21,28 +21,28 @@ function runTestsForN(n){
 		]
 	};
 	const buf = Buffer.allocUnsafe(2*n+1024);
-	const turboEncoder = Compiler.compileEncoder(MyMessage, buf.length);
+	const turboEncoder = Compiler.compileEncoder(MyMessage);
 	const turboDecoder = Compiler.compileDecoder(MyMessage);
 
 	const enc_protobuf = defs.MyMessage.encode(original);
 	const enc_json = JSON.stringify(original);
-	const enc_bin = MyMessage.encode(original);
+	const enc_bin = MyMessage.encode(original, null, null, buf.length);
 
 	new Benchmark.Suite('Encode')
 	.add('protobuf (encode)', () => {
 		defs.MyMessage.encode(original);
 	})
 	.add('binary-encoder (encode)', () => {
-		MyMessage.encode(original);
+		MyMessage.encode(original, null, null, buf.length);
 	})
 	.add('binary-encoder-buf (encode)', () => {
-		MyMessage.encode(original, buf);
+		MyMessage.encode(original, buf, null, buf.length);
 	})
 	.add('binary-encoder-compiled (encode)', () => {
-		turboEncoder(original);
+		turboEncoder(original, null, null, buf.length);
 	})
 	.add('binary-encoder-compiled-buf (encode)', () => {
-		turboEncoder(original, buf);
+		turboEncoder(original, buf, null, buf.length);
 	})
 	.add('json (encode)', () => {
 		JSON.stringify(original);
