@@ -127,6 +127,14 @@ Optional | Marks a field as optional (null if not present). | 1 + value size (if
 Data | A generic binary buffer. Equivalent to an Array of Uint8's. Can be fixed size. | (Array)
 String | A UTF-8 encoded string. Equivalent to Data with some post processing. Can be fixed size. | (Array)
 
+## Ideas and plans
+
+- [x] Generate code for super fast encoding and decoding
+- [ ] Provide utilities for format versioning
+- [ ] An efficient Boolean type that allows storing of 8 values in a single byte
+- [ ] Better transcoding error reporting
+- [ ] Make decoding at least as fast as protobuf
+
 ## Benchmarks
 
 The following benchmark compares Protobuf to this implementation for some basic data structure and a long string of length at least N. `binary-encoder-buf` uses a preallocated buffer for all operations. `binary-encoder-compiled` uses an API that generates a structural function (rather than recursive) that is much more efficient. This API has replaced the old transcoding functions in version 0.4
