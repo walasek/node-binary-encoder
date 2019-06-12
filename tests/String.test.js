@@ -6,7 +6,7 @@ module.exports = (t) => {
 
 		const D = lib.String();
 		const enc = D.encode(str);
-		t.equal(D.last_bytes_encoded, 1+str.length);
+		t.equal(enc.length, 1+str.length);
 		const dec = D.decode(enc);
 		t.equal(dec.toString(), str);
 	});
@@ -15,7 +15,7 @@ module.exports = (t) => {
 
 		const D = lib.String(str.length);
 		const enc = D.encode(str);
-		t.equal(D.last_bytes_encoded, str.length);
+		t.equal(enc.length, str.length);
 		const dec = D.decode(enc);
 		t.equal(dec.toString(), str);
 	});
@@ -26,7 +26,7 @@ module.exports = (t) => {
 		const encoder = lib.compileEncoder(D);
 		const decoder = lib.compileDecoder(D);
 		const enc = D.encode(str);
-		t.equal(D.last_bytes_encoded, str.length*2);
+		t.equal(enc.length, str.length*2);
 		const enc2 = encoder(str);
 		t.ok(Buffer.compare(enc, enc2) == 0);
 		const dec = D.decode(enc);

@@ -20,73 +20,23 @@ class TranscodableArray extends TranscodableType {
 		this.fixed_length = fixed_length || 0;
 		this.Varint = new Varint();
 	}
-	encode(object, buffer, offset){
-		if(!offset)
-			offset = 0;
-		let tmp_buffer = Buffer.from([]);
-		let local_offset = 0;
-		if(this.fixed_length){
-			if(object.length !== this.fixed_length)
-				throw new Exceptions.MissingFields('Cannot encode fixed array length, passed only '+object.length+' entries');
-		}else{
-			if(buffer){
-				this.Varint.encode(object.length, buffer, offset+local_offset);
-			}else{
-				tmp_buffer = this.Varint.encode(object.length);
-			}
-			local_offset += this.Varint.last_bytes_encoded;
-		}
-		for(let value of object){
-			if(buffer){
-				this.type.encode(value, buffer, offset+local_offset);
-			}else{
-				tmp_buffer = Buffer.concat([tmp_buffer, this.type.encode(value)]);
-			}
-			local_offset += this.type.last_bytes_encoded;
-		}
-		this.last_bytes_encoded = local_offset;
-		return buffer || tmp_buffer;
-	}
-	decode(buffer, offset){
-		if(!offset)
-			offset = 0;
-		let length = this.fixed_length;
-		let local_offset = 0;
-		if(!length){
-			length = this.Varint.decode(buffer, offset);
-			local_offset = this.Varint.last_bytes_decoded;
-		}
-		// REMARK: Math.min used to prevent stupidly big allocations
-		const result = new Array(Math.min(length, 1000));
-		for(let i = 0; i < length; i++){
-			const decoded = this.type.decode(buffer, local_offset+offset);
-			local_offset += this.type.last_bytes_decoded;
-			if(i < result.length){
-				result[i] = decoded;
-			}else{
-				result.push(decoded);
-			}
-		}
-		this.last_bytes_decoded = local_offset;
-		return result;
-	}
-	compiledEncoder(source_var){
+	compiledEncoder(source_var, alloc_fn){
 		return `${this.fixed_length ? `if(source.length !== ${this.fixed_length})
 			throw new Exceptions.MissingFields('Array does not match the fixed length of ${this.fixed_length}')`
-			: `${this.Varint.compiledEncoder(`${source_var}.length`)}`}
+			: `${this.Varint.compiledEncoder(`${source_var}.length`, alloc_fn)}`}
 		for(let value of ${source_var}){
-			${this.type.compiledEncoder('value')}
+			${this.type.compiledEncoder('value', alloc_fn)}
 		}`
 	}
-	compiledDecoder(target_var){
+	compiledDecoder(target_var, alloc_fn){
+		const tmp = (this.fixed_length ? null : alloc_fn());
 		return `
 		${!this.fixed_length ? `
-		${this.Varint.compiledDecoder('tmp')}
-		const _x = tmp;
+		${this.Varint.compiledDecoder(tmp)}
 		` : ''}
 		${target_var} = [];
-		for(let i = 0; i < ${this.fixed_length || '_x'}; i++){
-			${this.type.compiledDecoder(`${target_var}[i]`)}
+		for(let i = 0; i < ${this.fixed_length || tmp}; i++){
+			${this.type.compiledDecoder(`${target_var}[i]`, alloc_fn)}
 		}
 		`
 	}

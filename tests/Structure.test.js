@@ -8,7 +8,7 @@ module.exports = (t) => {
 		const o1 = {A: 1};
 		const encoded_o1 = BasicStructure.encode(o1);
 		t.equal(encoded_o1.length, 4, 'Structure has no length overhead');
-		t.equal(BasicStructure.last_bytes_encoded, 4);
+		t.equal(encoded_o1.length, 4);
 
 		const decoded_o1 = BasicStructure.decode(encoded_o1);
 		t.ok(decoded_o1.A);
@@ -49,7 +49,6 @@ module.exports = (t) => {
 		const o1 = {A: 1, B: 2};
 		const encoded_o1 = BasicStructure.encode(o1);
 		t.equal(encoded_o1.length, 8, 'Structure has no length overhead');
-		t.equal(BasicStructure.last_bytes_encoded, 8);
 
 		const decoded_o1 = BasicStructure.decode(encoded_o1);
 		t.ok(decoded_o1.A);
@@ -84,18 +83,14 @@ module.exports = (t) => {
 		};
 		const encoded = MainStructure.encode(o1);
 		t.equal(encoded.length, 16, 'Structure has no length overhead');
-		t.equal(MainStructure.last_bytes_encoded, 16);
-		t.equal(NestedStructure.last_bytes_encoded, 8);
 
 		const decoded = MainStructure.decode(encoded);
 		t.equal(decoded.Child1.A, o1.Child1.A);
 		t.equal(decoded.Child1.B, o1.Child1.B);
 		t.equal(decoded.Child2.A, o1.Child2.A);
 		t.equal(decoded.Child2.B, o1.Child2.B);
-		t.equal(MainStructure.last_bytes_decoded, 16);
 
 		const decoded_hack = NestedStructure.decode(encoded);
-		t.equal(NestedStructure.last_bytes_decoded, 8);
 		t.equal(decoded_hack.A, o1.Child1.A);
 		t.equal(decoded_hack.B, o1.Child1.B);
 	});

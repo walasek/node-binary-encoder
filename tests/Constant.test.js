@@ -14,7 +14,7 @@ module.exports = (t) => {
 		};
 
 		const enc = struct.encode(obj);
-		t.equal(struct.last_bytes_encoded, 5);
+		t.equal(enc.length, 5);
 		const dec = struct.decode(enc);
 		t.equal(dec.magic, obj.magic);
 		t.equal(dec.value, obj.value);

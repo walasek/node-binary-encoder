@@ -7,7 +7,7 @@ module.exports = (t) => {
 
 		const D = lib.Data();
 		const enc = D.encode(data);
-		t.equal(D.last_bytes_encoded, 1+str.length);
+		t.equal(enc.length, 1+str.length);
 		const dec = D.decode(enc);
 		t.equal(dec.toString(), str);
 		const encoder = lib.compileEncoder(D);
@@ -23,7 +23,7 @@ module.exports = (t) => {
 
 		const D = lib.Data(str.length);
 		const enc = D.encode(data);
-		t.equal(D.last_bytes_encoded, str.length);
+		t.equal(enc.length, str.length);
 		const dec = D.decode(enc);
 		t.equal(dec.toString(), str);
 		const encoder = lib.compileEncoder(D);

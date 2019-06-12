@@ -10,7 +10,7 @@ module.exports = (t) => {
 		const decoder = lib.compileDecoder(DEF);
 
 		const enc = DEF.encode({B: 1, A: 0});
-		t.equal(DEF.last_bytes_encoded, 5);
+		t.equal(enc.length, 5);
 		const dec = DEF.decode(enc);
 		t.equal(dec.B, 1);
 		const enc_2 = encoder({B: 1});

@@ -22,22 +22,7 @@ class Optional extends TranscodableType {
 			is_null: SINGLETON_NULL_INSTANCE,
 		});
 	}
-	encode(object, buffer, offset){
-		let result;
-		if(object){
-			result = this.oneof.encode({is_set: object}, buffer, offset);
-		}else{
-			result = this.oneof.encode({is_null: true}, buffer, offset);
-		}
-		this.last_bytes_encoded = this.oneof.last_bytes_encoded;
-		return result;
-	}
-	decode(buffer, offset){
-		const obj = this.oneof.decode(buffer, offset);
-		this.last_bytes_decoded = this.oneof.last_bytes_decoded;
-		return obj.is_set || null;
-	}
-	compiledEncoder(source_var){
+	compiledEncoder(source_var, alloc_fn){
 		return `
 		tmp = {};
 		if(${source_var}){
@@ -45,12 +30,12 @@ class Optional extends TranscodableType {
 		}else{
 			tmp.is_null = true;
 		}
-		${this.oneof.compiledEncoder('tmp')}
+		${this.oneof.compiledEncoder('tmp', alloc_fn)}
 		`;
 	}
-	compiledDecoder(target_var){
+	compiledDecoder(target_var, alloc_fn){
 		return `
-		${this.oneof.compiledDecoder('tmp')};
+		${this.oneof.compiledDecoder('tmp', alloc_fn)};
 		${target_var} = tmp.is_set || null;
 		`
 	}

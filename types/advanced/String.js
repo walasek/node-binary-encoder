@@ -10,41 +10,27 @@ const Exceptions = require('../../exceptions');
  * @augments TranscodableType
  */
 class StringType extends Data {
-	encode(object, buffer, offset){
-		let as_buf = Buffer.from(object, 'utf8');
-		if(this.size && as_buf.length < this.size){
-			// Pad with null bytes
-			as_buf = Buffer.concat([as_buf, Buffer.alloc(this.size-as_buf.length, 0)]);
-		}
-		if(this.size && as_buf.length > this.size){
-			throw new Exceptions.InvalidEncodeValue('Encoded string is too big to fit in '+this.size+' bytes.');
-		}
-		return super.encode(as_buf, buffer, offset);
-	}
-	decode(buffer, offset){
-		const firstNull = buffer.indexOf(0, offset);
-		if(firstNull !== -1)
-			return super.decode(buffer.slice(offset, firstNull), 0, true).toString('utf8');
-		return super.decode(buffer, offset).toString('utf8');
-	}
-	compiledEncoder(source_var){
+	compiledEncoder(source_var, alloc_fn){
+		const tmp = alloc_fn();
 		return `
-		tmp = Buffer.from(${source_var}, 'utf8');
-		${this.size ? `if(tmp.length < ${this.size})
-			tmp = Buffer.concat([tmp, Buffer.alloc(${this.size}-tmp.length, 0)]);
-		if(tmp.length > ${this.size})
+		${tmp} = Buffer.from(${source_var}, 'utf8');
+		${this.size ? `if(${tmp}.length < ${this.size})
+			${tmp} = Buffer.concat([${tmp}, Buffer.alloc(${this.size}-${tmp}.length, 0)]);
+		if(${tmp}.length > ${this.size})
 			throw new Exceptions.InvalidEncodeValue('Encoded string is too long to fit in ${this.size} bytes.')` : ''}
-		${super.compiledEncoder('tmp')}
+		${super.compiledEncoder(tmp, alloc_fn)}
 		`
 	}
-	compiledDecoder(target_var){
+	compiledDecoder(target_var, alloc_fn){
+		const tmp = alloc_fn();
+		const tmp2 = alloc_fn();
 		return `
-		${super.compiledDecoder('tmp')}
-		tmp2 = tmp.indexOf(0);
-		if(tmp2 !== -1){
-			${target_var} = tmp.slice(0, tmp2).toString('utf8');
+		${super.compiledDecoder(tmp, alloc_fn)}
+		${tmp2} = ${tmp}.indexOf(0);
+		if(${tmp2} !== -1){
+			${target_var} = ${tmp}.slice(0, ${tmp2}).toString('utf8');
 		}else{
-			${target_var} = tmp.toString('utf8');
+			${target_var} = ${tmp}.toString('utf8');
 		}
 		`
 	}

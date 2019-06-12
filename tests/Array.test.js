@@ -14,8 +14,8 @@ module.exports = (t) => {
 
 		const enc1 = A1.encode(v1);
 		const enc2 = A2.encode(v2);
-		t.equal(A1.last_bytes_encoded, 4);
-		t.equal(A2.last_bytes_encoded, 8);
+		t.equal(enc1.length, 4);
+		t.equal(enc2.length, 8);
 		t.throws(() => A1.encode(v2));
 		t.throws(() => A2.encode(v1));
 		t.throws(() => a1encoder(A2));
@@ -25,12 +25,10 @@ module.exports = (t) => {
 		const dec2 = A2.decode(enc2);
 		t.equal(dec1.length, 1);
 		t.equal(dec1[0], v1[0]);
-		t.equal(A1.last_bytes_decoded, 4);
 
 		t.equal(dec2.length, 2);
 		t.equal(dec2[0], v2[0]);
 		t.equal(dec2[1], v2[1]);
-		t.equal(A2.last_bytes_decoded, 8);
 	});
 
 	t.test('Basic variable arrays', (t) => {
@@ -40,20 +38,18 @@ module.exports = (t) => {
 		const v2 = [1,2];
 
 		const enc1 = A.encode(v1);
-		t.equal(A.last_bytes_encoded, 5);
+		t.equal(enc1.length, 5);
 		const enc2 = A.encode(v2);
-		t.equal(A.last_bytes_encoded, 9);
+		t.equal(enc2.length, 9);
 
 		const dec1 = A.decode(enc1);
 		t.equal(dec1.length, 1);
 		t.equal(dec1[0], v1[0]);
-		t.equal(A.last_bytes_decoded, 5);
 
 		const dec2 = A.decode(enc2);
 		t.equal(dec2.length, 2);
 		t.equal(dec2[0], v2[0]);
 		t.equal(dec2[1], v2[1]);
-		t.equal(A.last_bytes_decoded, 9);
 
 		const buf = Buffer.allocUnsafe(16);
 		const enc3 = A.encode(v1, buf, 1);

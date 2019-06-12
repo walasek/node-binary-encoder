@@ -12,9 +12,9 @@ module.exports = (t) => {
 		const u1 = {A: 1}
 		const u2 = {B: 2}
 		const enc1 = MyUnion.encode(u1);
-		t.equal(MyUnion.last_bytes_encoded, 5);
+		t.equal(enc1.length, 5);
 		const enc2 = MyUnion.encode(u2);
-		t.equal(MyUnion.last_bytes_encoded, 2);
+		t.equal(enc2.length, 2);
 		t.throws(() => MyUnion.encode({A: 1, B: 2}));
 
 		const dec1 = MyUnion.decode(enc1);

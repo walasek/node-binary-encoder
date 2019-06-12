@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>types/Structure.js - Documentation</title>
+    <title>Compiler.js - Documentation</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -32,7 +32,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">types/Structure.js</h1>
+    <h1 class="page-title">Compiler.js</h1>
     
 
     
@@ -42,57 +42,67 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>const TranscodableType = require('../Type');
-const Exceptions = require('../exceptions');
+            <pre class="prettyprint source linenums"><code>const Exceptions = require('./exceptions');
+const varint = require('varint');
 
-// REMARKS: This implementation assumes that ordering of keys
-//          in an object will remain the same as in code.
-/**
- * @class
- * A collection of different values.
- * @description Puts encoded values next to each other.
- * @augments TranscodableType
- */
-class Structure extends TranscodableType {
+module.exports = {
 	/**
-	 * @constructor
-	 * @param {Object} descriptor A map of keys and {@link TranscodableType}. All fields must be set when encoding.
+	 * Compile a fast, structural encoder.
+	 * @param {TranscodableType} structure
+	 * @param {Number} non_alloc_size If no buffer is provided when encoding then allocate this size. If too small then will throw a runtime exception.
+	 * @returns {Function} (source, buffer=null), where _source_ is the object to be encoded, _buffer_ is the buffer to write to, returns a raw Buffer
 	 */
-	constructor(descriptor){
-		super();
-		this.descriptor = descriptor;
-		this.fields = Object.keys(this.descriptor);
-	}
-	compiledEncoder(source_var, alloc_tmp){
-		return `
-		${this.fields.map(field => {
-			try {
-				if(!(this.descriptor[field] instanceof TranscodableType))
-					throw new Exceptions.InvalidDescriptor('Bad descriptor for field '+field);
-				return `${this.descriptor[field].compiledEncoder(`${source_var}.${field}`, alloc_tmp)}`;
-			}catch(err){
-				throw new Error('Exceptions occured when compiling encoder for '+field+'\n'+err);
+	compileEncoder(structure, non_alloc_size=4096){
+		let custom_vars = [];
+		const alloc_tmp_var = () => {
+			const name = 'tmp'+custom_vars.length;
+			custom_vars.push(name);
+			return name;
+		}
+		const compiled = structure.compiledEncoder('source', alloc_tmp_var);
+		const code = `
+		(source, buffer=null, offset=0) => {
+			let position = offset;
+			let buffer_flexible = false;
+			let i = 0;
+			let tmp;
+			${custom_vars.length > 0 ? 'let '+custom_vars.join(', ')+';' : ''}
+			if(!buffer){
+				buffer = Buffer.alloc(${non_alloc_size});
+				buffer_flexible = true;
 			}
-		}).join('\n')}
+			${compiled}
+			return buffer.slice(0, position);
+		}
 		`
-	}
-	compiledDecoder(target_var, alloc_tmp){
-		return `
-		${target_var} = {};
-		${this.fields.map((field) => {
-			try {
-				if(!(this.descriptor[field] instanceof TranscodableType))
-					throw new Exceptions.InvalidDescriptor('Bad descriptor for field '+field);
-				return `${this.descriptor[field].compiledDecoder(`${target_var}.${field}`, alloc_tmp)}`;
-			}catch(err){
-				throw new Error('Exceptions occured when compiling decoder for '+field+'\n'+err);
-			}
-		}).join('\n')}
+		return eval(code);
+	},
+	/**
+	 * Compile a fast, structural decoder.
+	 * @param {TranscodableType} structure
+	 * @returns {Function} (buffer), where _buffer_ is the data to decode, returns a the decoded _structure_ or throws on errors.
+	 */
+	compileDecoder(structure){
+		let custom_vars = [];
+		const alloc_tmp_var = () => {
+			const name = 'tmp'+custom_vars.length;
+			custom_vars.push(name);
+			return name;
+		}
+		const compiled = structure.compiledDecoder('result', alloc_tmp_var);
+		const code = `
+		(buffer, offset=0) => {
+			let result;
+			let position = offset;
+			let tmp;
+			${custom_vars.length > 0 ? 'let '+custom_vars.join(', ')+';' : ''}
+			${compiled}
+			return result;
+		}
 		`
+		return eval(code);
 	}
-}
-
-module.exports = Structure;</code></pre>
+}</code></pre>
         </article>
     </section>
 

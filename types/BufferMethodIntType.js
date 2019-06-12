@@ -9,29 +9,25 @@ const Exceptions = require('../exceptions');
 class BufferMethodIntType extends TranscodableType {
 	/**
 	 * @constructor
-	 * @param {function} write_method The function to use to write a value to a buffer.
-	 * @param {function} read_method The function to use to read a value from a buffer.
+	 * @param {string} write_snippet Method name of Buffer that writes.
+	 * @param {string} read_snippet Method name of Buffer that reads.
 	 * @param {number} size The size of read/written values.
 	 */
-	constructor(write_method, read_method, size){
+	constructor(write_snippet, read_snippet, size){
 		super();
-		this.write_method = write_method;
-		this.read_method = read_method;
+		this.write_snippet = write_snippet;
+		this.read_snippet = read_snippet;
 		this.size = size;
 	}
-	encode(object, buffer, offset){
-		if(typeof object !== 'number')
-			throw new Exceptions.InvalidEncodeValue('Expected a number, got '+(typeof object));
-		if(!buffer)
-			buffer = Buffer.allocUnsafe(this.size);
-		this.write_method.call(buffer, object, offset);
-		this.last_bytes_encoded = this.size;
-		return buffer;
+	compiledEncoder(source_var){
+		return `if(typeof ${source_var} != 'number')
+			throw new Exceptions.InvalidEncodeValue('Expected a number but got '+(typeof ${source_var}));
+		buffer.${this.write_snippet}(${source_var}, position);
+		position += ${this.size}`;
 	}
-	decode(buffer, offset){
-		const value = this.read_method.call(buffer, offset);
-		this.last_bytes_decoded = this.size;
-		return value;
+	compiledDecoder(target_var){
+		return `${target_var} = buffer.${this.read_snippet}(position);
+		position += ${this.size}`;
 	}
 }
 

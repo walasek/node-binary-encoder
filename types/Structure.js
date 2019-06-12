@@ -19,64 +19,31 @@ class Structure extends TranscodableType {
 		this.descriptor = descriptor;
 		this.fields = Object.keys(this.descriptor);
 	}
-	encode(object, buffer, offset){
-		if(!offset)
-			offset = 0;
-		let local_offset = 0;
-		let tmp_buffer = Buffer.from([]);
-		for(let i = 0; i < this.fields.length; i++){
-			/*if(!object[this.fields[i]])
-				throw new Exceptions.MissingFields('Cannot encode a partial structure, missing: '+this.fields[i]);*/
-			if(!(this.descriptor[this.fields[i]] instanceof TranscodableType))
-				throw new Exceptions.InvalidDescriptor('Bad descriptor for field '+this.fields[i]);
-			if(buffer){
-				this.descriptor[this.fields[i]].encode(object[this.fields[i]], buffer, local_offset+offset);
-			}else{
-				tmp_buffer = Buffer.concat([tmp_buffer, this.descriptor[this.fields[i]].encode(object[this.fields[i]])]);
-			}
-			local_offset += this.descriptor[this.fields[i]].last_bytes_encoded;
-		}
-		this.last_bytes_encoded = local_offset;
-		return buffer || tmp_buffer;
-	}
-	decode(buffer, offset){
-		if(!offset)
-			offset = 0;
-		let local_offset = 0;
-		const obj = {};
-		for(let i = 0; i < this.fields.length; i++){
-			const field_decoded = this.descriptor[this.fields[i]].decode(buffer, offset+local_offset);
-			local_offset += this.descriptor[this.fields[i]].last_bytes_decoded;
-			obj[this.fields[i]] = field_decoded;
-		}
-		this.last_bytes_decoded = local_offset;
-		return obj;
-	}
-	compiledEncoder(source_var){
+	compiledEncoder(source_var, alloc_tmp){
 		return `
 		${this.fields.map(field => {
 			try {
 				if(!(this.descriptor[field] instanceof TranscodableType))
 					throw new Exceptions.InvalidDescriptor('Bad descriptor for field '+field);
-				return `${this.descriptor[field].compiledEncoder(`${source_var}.${field}`)}`;
+				return `${this.descriptor[field].compiledEncoder(`${source_var}.${field}`, alloc_tmp)}`;
 			}catch(err){
 				throw new Error('Exceptions occured when compiling encoder for '+field+'\n'+err);
 			}
-		}).join('')}
+		}).join('\n')}
 		`
 	}
-	compiledDecoder(target_var){
+	compiledDecoder(target_var, alloc_tmp){
 		return `
 		${target_var} = {};
 		${this.fields.map((field) => {
 			try {
 				if(!(this.descriptor[field] instanceof TranscodableType))
 					throw new Exceptions.InvalidDescriptor('Bad descriptor for field '+field);
-				return `${this.descriptor[field].compiledDecoder(`${target_var}.${field}`)}`;
+				return `${this.descriptor[field].compiledDecoder(`${target_var}.${field}`, alloc_tmp)}`;
 			}catch(err){
 				throw new Error('Exceptions occured when compiling decoder for '+field+'\n'+err);
 			}
-		}).join('')}
+		}).join('\n')}
 		`
 	}
 }

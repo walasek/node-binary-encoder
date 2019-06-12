@@ -1,11 +1,13 @@
+const { compileEncoder,  compileDecoder } = require('./Compiler');
+
 /**
  * @class
  * Base class for any transcodable type definition.
  */
 class TranscodableType {
 	constructor(){
-		this.last_bytes_encoded = -1;
-		this.last_bytes_decoded = -1;
+		this._tmp_encoder_compiled = null;
+		this._tmp_decoder_compiled = null;
 	}
 	/**
 	 * Encode an object into a binary representation.
@@ -15,7 +17,9 @@ class TranscodableType {
 	 * @returns {Buffer} The buffer that contains the encoded data. If a new buffer is allocated then the data was written from the begining.
 	 */
 	encode(object, buffer, offset){
-		throw Error('Called abstract encode');
+		if(!this._tmp_encoder_compiled)
+			this._tmp_encoder_compiled = compileEncoder(this);
+		return this._tmp_encoder_compiled(object, buffer, offset);
 	}
 	/**
 	 * Decode an object from a binary representation.
@@ -23,7 +27,31 @@ class TranscodableType {
 	 * @param {Number} [offset] The offset in buffer to start reading.
 	 */
 	decode(buffer, offset){
-		throw Error('Called abstract decode');
+		if(!this._tmp_decoder_compiled)
+			this._tmp_decoder_compiled = compileDecoder(this);
+		return this._tmp_decoder_compiled(buffer, offset);
+	}
+	/**
+	 * Generate code that encodes the value in variable of name _source\_var_.
+	 * The code is pasted with other generated code in a single function.
+	 * Refer to {@link Compiler.js} for usable local variables.
+	 * @param {String} source_var The variable name to read from.
+	 * @param {function} tmp_var_alloc A function that allocates a unique temporary variable. Returns its name.
+	 * @returns {String} JavaScript code
+	 */
+	compiledEncoder(source_var, tmp_var_alloc){
+		throw new Error('Abstract compiledEncoder called');
+	}
+	/**
+	 * Generate code that decodes the local _buffer_ variable at _position_.
+	 * Save the decoded value to _target\_var_ variable.
+	 * Refer to {@link Compiler.js} for usable local variables.
+	 * @param {String} target_var The variable name to save to.
+	 * @param {function} tmp_var_alloc A function that allocates a unique temporary variable. Returns its name.
+	 * @returns {String} JavaScript code
+	 */
+	compiledDecoder(target_var, tmp_var_alloc){
+		throw new Error('Abstract compiledDecoder called');
 	}
 }
 

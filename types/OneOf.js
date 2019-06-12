@@ -24,45 +24,7 @@ class OneOf extends TranscodableType {
 		});
 		this.Varint = new Varint();
 	}
-	encode(object, buffer, offset){
-		if(!offset)
-			offset = 0;
-		const keys = Object.keys(object);
-		if(keys.length > 1)
-			throw new Exceptions.AmbiguousObject('OneOf fields only allow a single object key, provided '+keys.length);
-		const key = keys[0];
-		if(!this.descriptor[key])
-			throw new Exceptions.InvalidEncodeValue('Unknown OneOf key '+key);
-		let tmp_buffer = Buffer.from([]);
-		let local_offset = 0;
-		if(buffer){
-			this.Varint.encode(this.id_map[key], buffer, offset+local_offset);
-		}else{
-			tmp_buffer = this.Varint.encode(this.id_map[key]);
-		}
-		local_offset += this.Varint.last_bytes_encoded;
-		if(buffer){
-			this.descriptor[key].encode(object[key], buffer, offset+local_offset);
-		}else{
-			tmp_buffer = Buffer.concat([tmp_buffer, this.descriptor[key].encode(object[key])]);
-		}
-		local_offset += this.descriptor[key].last_bytes_encoded;
-		this.last_bytes_encoded = local_offset;
-		return buffer || tmp_buffer;
-	}
-	decode(buffer, offset){
-		if(!offset)
-			offset = 0;
-		const id = this.Varint.decode(buffer, offset);
-		let local_offset = this.Varint.last_bytes_decoded;
-		if(!this.rev_map[id])
-			throw new Exceptions.InvalidDecodeBuffer('Unknown OneOf id '+id);
-		const result = this.descriptor[this.rev_map[id]].decode(buffer, offset+local_offset);
-		local_offset += this.descriptor[this.rev_map[id]].last_bytes_decoded;
-		this.last_bytes_decoded = local_offset;
-		return {[this.rev_map[id]]: result};
-	}
-	compiledEncoder(source_var){
+	compiledEncoder(source_var, alloc_tmp){
 		return `
 		const keys = Object.keys(${source_var});
 		if(keys.length > 1)
@@ -73,7 +35,7 @@ class OneOf extends TranscodableType {
 				return `
 				case '${desc}':
 					${this.Varint.compiledEncoder(this.id_map[desc])}
-					${this.descriptor[desc].compiledEncoder(`${source_var}.${desc}`)}
+					${this.descriptor[desc].compiledEncoder(`${source_var}.${desc}`, alloc_tmp)}
 				break;
 				`
 			}).join('')}
@@ -82,21 +44,21 @@ class OneOf extends TranscodableType {
 		}
 		`
 	}
-	compiledDecoder(target_var){
+	compiledDecoder(target_var, alloc_tmp){
+		const tmp = alloc_tmp();
 		return `
-		${this.Varint.compiledDecoder('tmp')}
-		const _x = tmp;
+		${this.Varint.compiledDecoder(tmp)}
 		${target_var} = {};
-		switch(_x){
+		switch(${tmp}){
 			${Object.keys(this.descriptor).map(desc => {
 				return `
 				case ${this.id_map[desc]}:
-					${this.descriptor[desc].compiledDecoder(`${target_var}.${desc}`)}
+					${this.descriptor[desc].compiledDecoder(`${target_var}.${desc}`, alloc_tmp)}
 				break;
 				`
 			}).join('')}
 			default:
-				throw new Exceptions.InvalidDecodeBuffer('Unknown OneOf id '+tmp);
+				throw new Exceptions.InvalidDecodeBuffer('Unknown OneOf id '+${tmp});
 		}
 		`
 	}

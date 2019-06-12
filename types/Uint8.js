@@ -9,16 +9,7 @@ const BufferMethodIntType = require('./BufferMethodIntType');
  */
 class Uint8 extends BufferMethodIntType {
 	constructor(){
-		const buf = Buffer.from([]);
-		super(buf.writeUInt8, buf.readUInt8, 1);
-	}
-	compiledEncoder(source_var){
-		return `buffer.writeUInt8(${source_var}, position);
-		position += 1;`
-	}
-	compiledDecoder(target_var){
-		return `${target_var} = buffer.readUInt8(position);
-		position += 1;`;
+		super('writeUInt8', 'readUInt8', 1);
 	}
 }
 
