@@ -1,6 +1,6 @@
 const glob = require('glob');
 const path = require('path');
-const test = require('zora');
+const { test } = require('zora');
 
 async function runTestFile(file){
 	await test('Testing file '+file, async (t) => {
