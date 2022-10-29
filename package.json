@@ -28,17 +28,17 @@
   },
   "homepage": "https://github.com/walasek/node-binary-encoder#readme",
   "devDependencies": {
-    "benchmark": "^2.1.4",
-    "docdash": "^1.1.1",
-    "faucet": "0.0.1",
-    "glob": "^7.1.4",
-    "jsdoc": "^3.6.2",
-    "nyc": "^14.1.1",
-    "protocol-buffers": "^4.1.0",
-    "zora": "^3.0.1"
+    "benchmark": "^2",
+    "docdash": "^1",
+    "faucet": "0.0.3",
+    "glob": "^8",
+    "jsdoc": "^3",
+    "nyc": "^15",
+    "protocol-buffers": "^5",
+    "zora": "^3"
   },
   "dependencies": {
-    "debug": "^4.1.1",
-    "varint": "^5.0.0"
+    "debug": "^4",
+    "varint": "^6"
   }
 }
